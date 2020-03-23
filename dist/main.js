@@ -93,7 +93,7 @@
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-eval("document.addEventListener('DOMContentLoaded', () => {\n    const root = document.getElementById('root');\n  }\n)\n\n//# sourceURL=webpack:///./src/index.js?");
+eval("\ndocument.addEventListener('DOMContentLoaded', () => {\n  const loginButton = document.getElementById('login');\n})\n\n\n\n//# sourceURL=webpack:///./src/index.js?");
 
 /***/ })
 

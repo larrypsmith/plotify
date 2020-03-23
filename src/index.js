@@ -1,4 +1,5 @@
+
 document.addEventListener('DOMContentLoaded', () => {
-    const root = document.getElementById('root');
-  }
-)
+  const loginButton = document.getElementById('login');
+})
+
