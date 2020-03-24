@@ -106,7 +106,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _spo
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"login\", function() { return login; });\nconst login = () => {\n  const xhr = new XMLHttpRequest();\n  xhr.open('GET', `https://accounts.spotify.com/authorize` +\n    `?client_id=45966386e108497e8a2e05195e9b94cc` +\n    `&response_type=token` +\n    `&redirect_uri=https://larrypsmith.github.io/plotify/`,\n    false)\n}\n\n//# sourceURL=webpack:///./src/spotifyApiUtil.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"login\", function() { return login; });\nconst login = () => {\n  const xhr = new XMLHttpRequest();\n  xhr.open('GET', `https://accounts.spotify.com/authorize` +\n    `?client_id=45966386e108497e8a2e05195e9b94cc` +\n    `&response_type=token` +\n    `&redirect_uri=https://larrypsmith.github.io/plotify/`,\n    false\n  )\n  xhr.send()\n}\n\n//# sourceURL=webpack:///./src/spotifyApiUtil.js?");
 
 /***/ })
 
