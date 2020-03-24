@@ -3,15 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="./dist/styles/reset.css">
-  <link rel="stylesheet" href="./dist/styles/body.css">
+  <link rel="stylesheet" href="./styles/reset.css">
+  <link rel="stylesheet" href="./styles/header.css">
+  <link rel="stylesheet" href="./styles/body.css">
+  <link rel="stylesheet" href="./styles/main.css">
+  <link rel="stylesheet" href="./styles/welcome.css">
+  <link rel="stylesheet" href="./styles/login.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
   <script src="dist/main.js"></script>
   <title>Document</title>
 </head>
 <body>
+  <header>
+      Plotify
+  </header>
+
   <main>
-    <h1>Plotify maps your top Spotify artists in a Venn diagram that shows the genres they have in common.</h1>
-    <button id="login">Log in to Spotify</button>
+    <div id="welcome">
+      <h2>
+        Plotify maps your top Spotify artists in a <br/>Venn diagram that compares their genres.
+      </h2>
+      
+      <button id="login">
+        Log in to Spotify
+      </button>
+    </div>
+    
+    <div id="venn">
+      This is where the venn diagram will go
+    </div>
   </main>
 </body>
 </html>

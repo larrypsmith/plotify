@@ -1,15 +1,16 @@
-import { redirectToLogin } from './spotifyApiUtil';
-import queryString from 'query-string';
+import { redirectToLogin } from './util';
+import QueryString from 'query-string';
 
 document.addEventListener('DOMContentLoaded', () => {
-  const loginButton = document.getElementById('login');
-  loginButton.addEventListener('click', redirectToLogin)
-
-  const parsed = queryString.parse(window.location.search)
-  if (Object.keys(parsed).includes(access_token)) {
-    debugger
-    console.log(parsed)
+  const welcome = document.getElementById('welcome');
+  const venn = document.getElementById('venn')
+  const parsed = QueryString.parse(window.location.search)
+  
+  if ('access_token' in parsed) {
+    welcome.setAttribute('style', 'display: none')
   } else {
-    console.log('no access token')
+    venn.setAttribute('style', 'display: none')
+    const loginButton = document.getElementById('login');
+    loginButton.addEventListener('click', redirectToLogin)
   }
 })

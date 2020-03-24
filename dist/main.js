@@ -142,19 +142,19 @@ eval("\nmodule.exports = str => encodeURIComponent(str).replace(/[!'()*]/g, x =>
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _spotifyApiUtil__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./spotifyApiUtil */ \"./src/spotifyApiUtil.js\");\n/* harmony import */ var query_string__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! query-string */ \"./node_modules/query-string/index.js\");\n/* harmony import */ var query_string__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(query_string__WEBPACK_IMPORTED_MODULE_1__);\n\n\n\ndocument.addEventListener('DOMContentLoaded', () => {\n  const loginButton = document.getElementById('login');\n  loginButton.addEventListener('click', _spotifyApiUtil__WEBPACK_IMPORTED_MODULE_0__[\"redirectToLogin\"])\n\n  const parsed = query_string__WEBPACK_IMPORTED_MODULE_1___default.a.parse(window.location.search)\n  if (Object.keys(parsed).includes(access_token)) {\n    debugger\n    console.log(parsed)\n  } else {\n    console.log('no access token')\n  }\n})\n\n//# sourceURL=webpack:///./src/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./util */ \"./src/util.js\");\n/* harmony import */ var query_string__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! query-string */ \"./node_modules/query-string/index.js\");\n/* harmony import */ var query_string__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(query_string__WEBPACK_IMPORTED_MODULE_1__);\n\n\n\ndocument.addEventListener('DOMContentLoaded', () => {\n  const welcome = document.getElementById('welcome');\n  const venn = document.getElementById('venn')\n  const parsed = query_string__WEBPACK_IMPORTED_MODULE_1___default.a.parse(window.location.search)\n  \n  if ('access_token' in parsed) {\n    welcome.setAttribute('style', 'display: none')\n  } else {\n    venn.setAttribute('style', 'display: none')\n    const loginButton = document.getElementById('login');\n    loginButton.addEventListener('click', _util__WEBPACK_IMPORTED_MODULE_0__[\"redirectToLogin\"])\n  }\n})\n\n//# sourceURL=webpack:///./src/index.js?");
 
 /***/ }),
 
-/***/ "./src/spotifyApiUtil.js":
-/*!*******************************!*\
-  !*** ./src/spotifyApiUtil.js ***!
-  \*******************************/
+/***/ "./src/util.js":
+/*!*********************!*\
+  !*** ./src/util.js ***!
+  \*********************/
 /*! exports provided: redirectToLogin */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"redirectToLogin\", function() { return redirectToLogin; });\nconst generateRandomString = () => (\n  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)\n)\n\nconst redirectToLogin = () => {\n  window.location.href = `https://accounts.spotify.com/authorize?client_id=45966386e108497e8a2e05195e9b94cc&response_type=token&redirect_uri=https://larrypsmith.github.io/plotify/&scope=user-top-read&state=${generateRandomString()}`\n}\n\n//# sourceURL=webpack:///./src/spotifyApiUtil.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"redirectToLogin\", function() { return redirectToLogin; });\nconst generateRandomString = () => (\n  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)\n)\n\nconst redirectToLogin = () => {\n  window.location.href = `https://accounts.spotify.com/authorize?client_id=45966386e108497e8a2e05195e9b94cc&response_type=token&redirect_uri=https://larrypsmith.github.io/plotify/&scope=user-top-read&state=${generateRandomString()}`\n}\n\n//# sourceURL=webpack:///./src/util.js?");
 
 /***/ })
 
