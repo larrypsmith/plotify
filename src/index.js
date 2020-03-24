@@ -6,7 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
   loginButton.addEventListener('click', redirectToLogin)
 
   const parsed = queryString.parse(window.location.search)
-  if (access_token in parsed) {
+  if (Object.keys(parsed).includes(access_token)) {
+    debugger
     console.log(parsed)
   } else {
     console.log('no access token')
