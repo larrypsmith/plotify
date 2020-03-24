@@ -94,7 +94,7 @@
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _spotifyApiUtil__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./spotifyApiUtil */ \"./src/spotifyApiUtil.js\");\n\n\ndocument.addEventListener('DOMContentLoaded', () => {\n  const loginButton = document.getElementById('login');\n  loginButton.addEventListener('click', _spotifyApiUtil__WEBPACK_IMPORTED_MODULE_0__[\"login\"])\n})\n\n\n\n//# sourceURL=webpack:///./src/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _spotifyApiUtil__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./spotifyApiUtil */ \"./src/spotifyApiUtil.js\");\n\n\ndocument.addEventListener('DOMContentLoaded', () => {\n  const loginButton = document.getElementById('login');\n  loginButton.addEventListener('click', _spotifyApiUtil__WEBPACK_IMPORTED_MODULE_0__[\"redirectToLogin\"])\n})\n\n//# sourceURL=webpack:///./src/index.js?");
 
 /***/ }),
 
@@ -102,11 +102,11 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _spo
 /*!*******************************!*\
   !*** ./src/spotifyApiUtil.js ***!
   \*******************************/
-/*! exports provided: login */
+/*! exports provided: redirectToLogin */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"login\", function() { return login; });\nconst login = () => {\n  const xhr = new XMLHttpRequest();\n  xhr.open('GET', `https://accounts.spotify.com/authorize` +\n    `?client_id=45966386e108497e8a2e05195e9b94cc` +\n    `&response_type=token` +\n    `&redirect_uri=https://larrypsmith.github.io/plotify/`,\n    false\n  )\n  xhr.send()\n}\n\n//# sourceURL=webpack:///./src/spotifyApiUtil.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"redirectToLogin\", function() { return redirectToLogin; });\n// export const redirectToLogin = () => {\n//   const xhr = new XMLHttpRequest();\n//   xhr.open('GET',\n//     `https://accounts.spotify.com/authorize` +\n//     `?client_id=45966386e108497e8a2e05195e9b94cc` +\n//     `&response_type=token` +\n//     `&redirect_uri=https://larrypsmith.github.io/plotify/` +\n//     `&scope=user-top-read`,\n//     false\n//   )\n//   xhr.send()\n// }\n\nconst redirectToLogin = () => {\n  window.location.replace('https://accounts.spotify.com/authorize?client_id=45966386e108497e8a2e05195e9b94cc&response_type=token&redirect_uri=https://larrypsmith.github.io/plotify/&scope=user-top-read')\n}\n\n//# sourceURL=webpack:///./src/spotifyApiUtil.js?");
 
 /***/ })
 
