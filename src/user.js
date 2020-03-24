@@ -3,7 +3,6 @@
 export default class User {
   constructor() {
     this.state = this.generateState();
-    // this.generateState = this.generateState.bind(this);
   }
 
   generateState() {
@@ -17,5 +16,5 @@ export default class User {
       .substring(2, 15);
   }
   
-  
+
 }
