@@ -106,7 +106,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _spo
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"redirectToLogin\", function() { return redirectToLogin; });\nconst redirectToLogin = () => {\n  window.location.href = 'https://accounts.spotify.com/authorize?client_id=45966386e108497e8a2e05195e9b94cc&response_type=token&redirect_uri=https://larrypsmith.github.io/plotify/&scope=user-top-read'\n}\n\n//# sourceURL=webpack:///./src/spotifyApiUtil.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"redirectToLogin\", function() { return redirectToLogin; });\nconst generateRandomString = () => (\n  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)\n)\n\nconst redirectToLogin = () => {\n  window.location.href = `https://accounts.spotify.com/authorize?client_id=45966386e108497e8a2e05195e9b94cc&response_type=token&redirect_uri=https://larrypsmith.github.io/plotify/&scope=user-top-read&state=${generateRandomString()}`\n}\n\n//# sourceURL=webpack:///./src/spotifyApiUtil.js?");
 
 /***/ })
 
