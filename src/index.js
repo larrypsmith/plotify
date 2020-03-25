@@ -12,10 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
   
   if (isAuthenticated()) {
     debugger
-    // main.appendChild(venn.render());
+    const venn = new Venn();
+    main.appendChild(venn.render);
   } else {
     debugger
     main.appendChild(Welcome.render())
   }
 })
-
