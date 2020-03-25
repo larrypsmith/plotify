@@ -150,11 +150,11 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _uti
 /*!*********************!*\
   !*** ./src/util.js ***!
   \*********************/
-/*! exports provided: redirectToLogin, requestTopArtists */
+/*! exports provided: redirectToLogin */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"redirectToLogin\", function() { return redirectToLogin; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"requestTopArtists\", function() { return requestTopArtists; });\nconst redirectToLogin = (state) => {\n  window.location.href = 'https://accounts.spotify.com/authorize' +\n  '?client_id=45966386e108497e8a2e05195e9b94cc' +\n  '&response_type=token' + \n  '&redirect_uri=https://larrypsmith.github.io/plotify/' +\n  '&scope=user-top-read' +\n  `&state=${state}`\n}\n\nconst requestTopArtists = (accessToken) => {\n  const xhr = new XMLHttpRequest();\n  xhr.open('GET', `https://api.spotify.com/v1/me/top/artists`);\n  xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);\n  xhr.send();\n  const response = JSON.parse(xhr.response);\n  return response.items.map(artist => ({\n    name: artist.name,\n    genres: artist.genres\n  }));\n}\n\n//# sourceURL=webpack:///./src/util.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"redirectToLogin\", function() { return redirectToLogin; });\nconst redirectToLogin = (state) => {\n  window.location.href = 'https://accounts.spotify.com/authorize' +\n  '?client_id=45966386e108497e8a2e05195e9b94cc' +\n  '&response_type=token' + \n  '&redirect_uri=https://larrypsmith.github.io/plotify/' +\n  '&scope=user-top-read' +\n  `&state=${state}`\n}\n\n//# sourceURL=webpack:///./src/util.js?");
 
 /***/ }),
 
