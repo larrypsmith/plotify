@@ -4,5 +4,5 @@ export const redirectToLogin = (state) => {
   '&response_type=token' + 
   '&redirect_uri=https://larrypsmith.github.io/plotify/' +
   '&scope=user-top-read' +
-  `&state=${state}`
+  `&state=${state}`;
 }

@@ -134,6 +134,30 @@ eval("\nmodule.exports = str => encodeURIComponent(str).replace(/[!'()*]/g, x =>
 
 /***/ }),
 
+/***/ "./src/BubbleChart.js":
+/*!****************************!*\
+  !*** ./src/BubbleChart.js ***!
+  \****************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return BubbleChart; });\nclass BubbleChart {\n  constructor(artists) {\n    this.artists = artists;\n    this.genres = this.getGenres();\n    debugger\n  }\n\n  getGenres() {\n    let genres = {};\n\n    this.artists.forEach(artist => {\n      artist.genres.forEach(genre => {\n        if (!genres[genre]) genres[genre] = [];\n        genres[genre].push(artist.name);\n      })\n    });\n\n    return Object.keys(genres).map(genre => ({\n      name: genre,\n      members: genres[genre]\n    }));\n  }\n\n  vennHtml() {\n    debugger\n    const html = Object.keys(this.genres);\n    return html;\n  }\n\n  render() {\n    let container = document.createElement(\"div\");\n    container.className = \"venn\";\n    container.innerHTML = this.vennHtml();\n    return container;\n  }\n}\n\n//# sourceURL=webpack:///./src/BubbleChart.js?");
+
+/***/ }),
+
+/***/ "./src/Welcome.js":
+/*!************************!*\
+  !*** ./src/Welcome.js ***!
+  \************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony default export */ __webpack_exports__[\"default\"] = ({\n  renderWelcome: function() {\n    const html = `\n      <h2>\n        Plotify plots your top Spotify artists in a Venn diagram that compares their genres.\n      </h2>\n\n      <button id=\"login\">\n        Connect with Spotify\n      </button>\n    `\n    return html;\n  },\n\n  render: function() {\n    let container = document.createElement('div');\n    container.className = 'welcome';\n    container.innerHTML = this.renderWelcome();\n    return container;\n  }\n});\n\n//# sourceURL=webpack:///./src/Welcome.js?");
+
+/***/ }),
+
 /***/ "./src/index.js":
 /*!**********************!*\
   !*** ./src/index.js ***!
@@ -142,7 +166,7 @@ eval("\nmodule.exports = str => encodeURIComponent(str).replace(/[!'()*]/g, x =>
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./util */ \"./src/util.js\");\n/* harmony import */ var query_string__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! query-string */ \"./node_modules/query-string/index.js\");\n/* harmony import */ var query_string__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(query_string__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _venn__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./venn */ \"./src/venn.js\");\n/* harmony import */ var _welcome__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./welcome */ \"./src/welcome.js\");\n\n\n\n\n\n\n\nconst isAuthenticated = () => {\n  const hash = window.location.hash.substr(1);\n  return hash.includes('access_token');\n}\n\nconst getAccessToken = () => {\n  const hash = window.location.hash.substr(1);\n  const parsedHash = query_string__WEBPACK_IMPORTED_MODULE_1___default.a.parse(hash);\n  return parsedHash.access_token;\n}\n\ndocument.addEventListener('DOMContentLoaded', () => {\n  const main = document.querySelector('main')\n  main.innerHTML = \"\";\n  \n  if (isAuthenticated()) {\n    const xhr = new XMLHttpRequest();\n    xhr.open('GET', `https://api.spotify.com/v1/me/top/artists`);\n    xhr.setRequestHeader('Authorization', 'Bearer ' + getAccessToken());\n    xhr.onload = function () {\n      const response = JSON.parse(xhr.response);\n      const artists = response.items.map(artist => ({\n        name: artist.name,\n        genres: artist.genres\n      }));\n      const venn = new _venn__WEBPACK_IMPORTED_MODULE_2__[\"default\"](artists);\n      main.appendChild(venn.render())\n    }\n    xhr.send();\n  } else {\n    main.appendChild(_welcome__WEBPACK_IMPORTED_MODULE_3__[\"default\"].render())\n    const loginButton = document.querySelector('button');\n    loginButton.addEventListener('click', _util__WEBPACK_IMPORTED_MODULE_0__[\"redirectToLogin\"]);\n  }\n})\n\n//# sourceURL=webpack:///./src/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./util */ \"./src/util.js\");\n/* harmony import */ var query_string__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! query-string */ \"./node_modules/query-string/index.js\");\n/* harmony import */ var query_string__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(query_string__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _BubbleChart__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./BubbleChart */ \"./src/BubbleChart.js\");\n/* harmony import */ var _Welcome__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Welcome */ \"./src/Welcome.js\");\n\n\n\n\n\n\n\nconst isAuthenticated = () => {\n  const hash = window.location.hash.substr(1);\n  return hash.includes('access_token');\n}\n\nconst getAccessToken = () => {\n  const hash = window.location.hash.substr(1);\n  const parsedHash = query_string__WEBPACK_IMPORTED_MODULE_1___default.a.parse(hash);\n  return parsedHash.access_token;\n}\n\ndocument.addEventListener('DOMContentLoaded', () => {\n  const main = document.querySelector('main')\n  main.innerHTML = \"\";\n  \n  if (isAuthenticated()) {\n    const xhr = new XMLHttpRequest();\n    xhr.open('GET', `https://api.spotify.com/v1/me/top/artists?limit=50`);\n    xhr.setRequestHeader('Authorization', 'Bearer ' + getAccessToken());\n    xhr.onload = function () {\n      const response = JSON.parse(xhr.response);\n      const artists = response.items.map(artist => ({\n        name: artist.name,\n        genres: artist.genres\n      }));\n      const venn = new _BubbleChart__WEBPACK_IMPORTED_MODULE_2__[\"default\"](artists);\n      main.appendChild(venn.render())\n    }\n    xhr.send();\n  } else {\n    main.appendChild(_Welcome__WEBPACK_IMPORTED_MODULE_3__[\"default\"].render())\n    const loginButton = document.querySelector('button');\n    loginButton.addEventListener('click', _util__WEBPACK_IMPORTED_MODULE_0__[\"redirectToLogin\"]);\n  }\n})\n\n//# sourceURL=webpack:///./src/index.js?");
 
 /***/ }),
 
@@ -154,31 +178,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _uti
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"redirectToLogin\", function() { return redirectToLogin; });\nconst redirectToLogin = (state) => {\n  window.location.href = 'https://accounts.spotify.com/authorize' +\n  '?client_id=45966386e108497e8a2e05195e9b94cc' +\n  '&response_type=token' + \n  '&redirect_uri=https://larrypsmith.github.io/plotify/' +\n  '&scope=user-top-read' +\n  `&state=${state}`\n}\n\n//# sourceURL=webpack:///./src/util.js?");
-
-/***/ }),
-
-/***/ "./src/venn.js":
-/*!*********************!*\
-  !*** ./src/venn.js ***!
-  \*********************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return Venn; });\nclass Venn {\n  constructor(artists) {\n    this.artists = artists;\n  }\n\n  vennHtml() {\n    const html = this.artists.map(artist => artist.name);\n    return html;\n  }\n\n  render() {\n    let container = document.createElement(\"div\");\n    container.className = \"venn\";\n    container.innerHTML = this.vennHtml();\n    return container;\n  }\n}\n\n//# sourceURL=webpack:///./src/venn.js?");
-
-/***/ }),
-
-/***/ "./src/welcome.js":
-/*!************************!*\
-  !*** ./src/welcome.js ***!
-  \************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony default export */ __webpack_exports__[\"default\"] = ({\n  renderWelcome: function() {\n    const html = `\n      <h2>\n        Plotify plots your top Spotify artists in a Venn diagram that compares their genres.\n      </h2>\n\n      <button id=\"login\">\n        Connect with Spotify\n      </button>\n    `\n    return html;\n  },\n\n  render: function() {\n    let container = document.createElement('div');\n    container.className = 'welcome';\n    container.innerHTML = this.renderWelcome();\n    return container;\n  }\n});\n\n//# sourceURL=webpack:///./src/welcome.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"redirectToLogin\", function() { return redirectToLogin; });\nconst redirectToLogin = (state) => {\n  window.location.href = 'https://accounts.spotify.com/authorize' +\n  '?client_id=45966386e108497e8a2e05195e9b94cc' +\n  '&response_type=token' + \n  '&redirect_uri=https://larrypsmith.github.io/plotify/' +\n  '&scope=user-top-read' +\n  `&state=${state}`;\n}\n\n//# sourceURL=webpack:///./src/util.js?");
 
 /***/ })
 

@@ -1,8 +1,8 @@
 import { redirectToLogin } from './util'
 import QueryString from 'query-string'
 
-import Venn from './venn';
-import Welcome from './welcome';
+import BubbleChart from './BubbleChart';
+import Welcome from './Welcome';
 
 
 const isAuthenticated = () => {
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   if (isAuthenticated()) {
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', `https://api.spotify.com/v1/me/top/artists`);
+    xhr.open('GET', `https://api.spotify.com/v1/me/top/artists?limit=50`);
     xhr.setRequestHeader('Authorization', 'Bearer ' + getAccessToken());
     xhr.onload = function () {
       const response = JSON.parse(xhr.response);
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         name: artist.name,
         genres: artist.genres
       }));
-      const venn = new Venn(artists);
+      const venn = new BubbleChart(artists);
       main.appendChild(venn.render())
     }
     xhr.send();
