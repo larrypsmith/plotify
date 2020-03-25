@@ -9,7 +9,7 @@ export const redirectToLogin = (state) => {
 
 export const requestTopArtists = (accessToken) => {
   const xhr = new XMLHttpRequest();
-  xhr.open('GET', `https://api.spotify.com/v1/me/top/artists`, false);
+  xhr.open('GET', `https://api.spotify.com/v1/me/top/artists`);
   xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
   xhr.send();
   const response = JSON.parse(xhr.response);
