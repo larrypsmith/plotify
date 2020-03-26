@@ -29984,16 +29984,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (Object(_util__WEBPACK_IMPORTED_MODULE_0__["isAuthenticated"])()) {
     const accessToken = Object(_util__WEBPACK_IMPORTED_MODULE_0__["getAccessToken"])();
-    debugger
     fetch(`https://api.spotify.com/v1/me/top/artists?limit=50`, {
       method: 'GET',
-      mode: 'cors',
-      headers: { 'Authorization': `Bearer ${accessToken}`}
+      headers: { 'Authorization': 'Bearer ' + accessToken }
     })
       .then(res => console.log(res))
       .then(data => console.log(data))
   } else {
-    debugger
     main.appendChild(_Welcome__WEBPACK_IMPORTED_MODULE_2__["default"].render())
     const loginButton = document.querySelector('button');
     loginButton.addEventListener('click', _util__WEBPACK_IMPORTED_MODULE_0__["redirectToLogin"]);
@@ -30084,7 +30081,7 @@ const redirectToLogin = (state) => {
   window.location.href = 'https://accounts.spotify.com/authorize' +
   '?client_id=45966386e108497e8a2e05195e9b94cc' +
   '&response_type=token' + 
-  '&redirect_uri=http://127.0.0.1:5500/index.html' +
+  '&redirect_uri=https://larrypsmith.github.io/plotify/' +
   '&scope=user-top-read' +
   `&state=${state}`;
 }
