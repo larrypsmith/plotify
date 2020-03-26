@@ -2,7 +2,6 @@ export default class BubbleChart {
   constructor(artists) {
     this.artists = artists;
     this.genres = this.getGenres();
-    debugger
   }
 
   getGenres() {
@@ -17,12 +16,11 @@ export default class BubbleChart {
 
     return Object.keys(genres).map(genre => ({
       name: genre,
-      members: genres[genre]
+      children: genres[genre]
     }));
   }
 
   vennHtml() {
-    debugger
     const html = Object.keys(this.genres);
     return html;
   }

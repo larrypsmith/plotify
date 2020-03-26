@@ -1,20 +1,9 @@
-import { redirectToLogin } from './util'
-import QueryString from 'query-string'
+import { redirectToLogin, isAuthenticated, getAccessToken } from './util'
 
 import BubbleChart from './BubbleChart';
 import Welcome from './Welcome';
 
-
-const isAuthenticated = () => {
-  const hash = window.location.hash.substr(1);
-  return hash.includes('access_token');
-}
-
-const getAccessToken = () => {
-  const hash = window.location.hash.substr(1);
-  const parsedHash = QueryString.parse(hash);
-  return parsedHash.access_token;
-}
+import * as d3 from 'd3';
 
 document.addEventListener('DOMContentLoaded', () => {
   const main = document.querySelector('main')
@@ -30,8 +19,35 @@ document.addEventListener('DOMContentLoaded', () => {
         name: artist.name,
         genres: artist.genres
       }));
-      const venn = new BubbleChart(artists);
-      main.appendChild(venn.render())
+
+      const chart = new BubbleChart(artists);
+      const genres = chart.genres;
+      const root = {children: genres};
+      let hierarchy = d3.hierarchy(root).count();
+      let pack = d3.pack()
+        .size([600, 600])
+        .padding(2)
+      let packedData = pack(hierarchy);
+
+      const svg = d3.select('svg')
+        .style('width', '100%')
+        .style('height', 'auto')
+        .attr('font-size', 10)
+        .attr('font-family', 'sans-serif')
+        .attr('text-anchor', 'middle');
+
+      const color = d3.scaleLinear()
+        .domain([0, packedData.height])
+        .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
+        .interpolate(d3.interpolateHcl)
+
+      const node = svg.append('g')
+        .selectAll('circle')
+        .data(packedData.descendants().slice(1))
+        .join('circle')
+          .attr('fill', d => d.children ? color(d.depth) : "white")
+          .attr('transform', d => `translate(${d.x + 1}, ${d.y + 1})`)
+          .attr('r', d => `${d.r}`)
     }
     xhr.send();
   } else {
@@ -40,3 +56,5 @@ document.addEventListener('DOMContentLoaded', () => {
     loginButton.addEventListener('click', redirectToLogin);
   }
 })
+
+  
