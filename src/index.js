@@ -10,8 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
   main.innerHTML = "";
 
   if (isAuthenticated()) {
-    debugger
     const accessToken = getAccessToken();
+    debugger
     fetch(`https://api.spotify.com/v1/me/top/artists?limit=50`, {
       method: 'GET',
       headers: { 'Authorization': `Bearer ${accessToken}`}

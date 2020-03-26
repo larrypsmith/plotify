@@ -29983,8 +29983,8 @@ document.addEventListener('DOMContentLoaded', () => {
   main.innerHTML = "";
 
   if (Object(_util__WEBPACK_IMPORTED_MODULE_0__["isAuthenticated"])()) {
-    debugger
     const accessToken = Object(_util__WEBPACK_IMPORTED_MODULE_0__["getAccessToken"])();
+    debugger
     fetch(`https://api.spotify.com/v1/me/top/artists?limit=50`, {
       method: 'GET',
       headers: { 'Authorization': `Bearer ${accessToken}`}
