@@ -14,11 +14,13 @@ document.addEventListener('DOMContentLoaded', () => {
     debugger
     fetch(`https://api.spotify.com/v1/me/top/artists?limit=50`, {
       method: 'GET',
+      mode: 'cors',
       headers: { 'Authorization': `Bearer ${accessToken}`}
     })
       .then(res => console.log(res))
       .then(data => console.log(data))
   } else {
+    debugger
     main.appendChild(Welcome.render())
     const loginButton = document.querySelector('button');
     loginButton.addEventListener('click', redirectToLogin);
