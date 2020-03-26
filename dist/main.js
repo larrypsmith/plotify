@@ -29997,14 +29997,19 @@ document.addEventListener('DOMContentLoaded', () => {
       const genres = chart.genres;
       const root = {children: genres};
       let hierarchy = d3__WEBPACK_IMPORTED_MODULE_3__["hierarchy"](root).count();
+      const width = 500;
+      const height = width;
+
       let pack = d3__WEBPACK_IMPORTED_MODULE_3__["pack"]()
-        .size([600, 600])
+        .size([width, height])
         .padding(2)
       let packedData = pack(hierarchy);
 
-      const svg = d3__WEBPACK_IMPORTED_MODULE_3__["select"]('svg')
-        .style('width', '100%')
-        .style('height', 'auto')
+      const main = d3__WEBPACK_IMPORTED_MODULE_3__["select"]('main')
+
+      const svg = main.append("svg")
+        .style('width', `${width}px`)
+        .style('height', `${height}px`)
         .attr('font-size', 10)
         .attr('font-family', 'sans-serif')
         .attr('text-anchor', 'middle');
@@ -30021,6 +30026,9 @@ document.addEventListener('DOMContentLoaded', () => {
           .attr('fill', d => d.children ? color(d.depth) : "white")
           .attr('transform', d => `translate(${d.x + 1}, ${d.y + 1})`)
           .attr('r', d => `${d.r}`)
+
+      debugger
+
     }
     xhr.send();
   } else {
