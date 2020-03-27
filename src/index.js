@@ -4,9 +4,9 @@ import Welcome from './welcome';
 import Chart from './chart';
 
 document.addEventListener('DOMContentLoaded', () => {
-  const main = document.querySelector('main')
+  const main = document.querySelector('main');
   main.innerHTML = "";
-  
+
   if (isAuthenticated()) {
     const xhr = new XMLHttpRequest();
     xhr.open('GET', `https://api.spotify.com/v1/me/top/artists?limit=50`);

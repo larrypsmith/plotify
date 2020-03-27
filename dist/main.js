@@ -29998,9 +29998,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  const main = document.querySelector('main')
+  const main = document.querySelector('main');
   main.innerHTML = "";
-  
+
   if (Object(_util__WEBPACK_IMPORTED_MODULE_0__["isAuthenticated"])()) {
     const xhr = new XMLHttpRequest();
     xhr.open('GET', `https://api.spotify.com/v1/me/top/artists?limit=50`);
