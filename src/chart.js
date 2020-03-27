@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 
 export default (data, selector) => {
-  // format input data
+  // create genres object
   let genres = {};
 
   data.forEach(artist => {
@@ -13,13 +13,20 @@ export default (data, selector) => {
       });
     })
   });
-  
+
+  // delete genres with only 1 member
+  Object.keys(genres).forEach(genre => {
+    let artists = genres[genre]
+    if (artists.length < 2) delete genres[genre]
+  })
+
+  // format data for D3 hierarchy
   const formattedData = Object.keys(genres).map(genre => ({
     name: genre,
     children: genres[genre]
   }));
   
-  // create root for hierarchy
+  // create root
   const root = {children: formattedData}
 
   // create count-based hierarchy
@@ -38,20 +45,23 @@ export default (data, selector) => {
   // append svg to parent and format it
   const hook = d3.select(selector);
   const svg = hook.append("svg")
-    .attr('viewbox', [0, 0, width, height])
     .style('width', `${width}px`)
     .style('height', `${height}px`)
     .attr('font-size', 10)
     .attr('font-family', 'sans-serif')
     .attr('text-anchor', 'middle');
 
-
-  // map non-leaves to circle nodes
+  // map genres to circle nodes
   const node = svg.append('g')
     .selectAll('circle')
-    // .attr('fill', d => d.children ? "#1db954" : "white")
+    .data(packedData.children)
+    .join('circle')
+      .attr('fill', '#1db954')
+      .attr('cx', d => `${d.x}`)
+      .attr('cy', d => `${d.y}`)
+      .attr('r', d => `${d.r}`)
 
-  // map leaves to circle nodes
+  // map leaves (artists) to circle nodes
   const leaf = svg.append('g')
     .selectAll('clipPath')
     .data(packedData.leaves())
@@ -59,16 +69,18 @@ export default (data, selector) => {
     .append('clipPath')
       .attr('id', (d, i) => `clip-${i}`)
     .append('circle')
+      .attr('stroke', 'white')
+      .attr('stroke-width', '5')
       .attr('cx', d => `${d.x}`)
       .attr('cy', d => `${d.y}`)
       .attr('r', d => `${d.r}`)
     
 
   // set image width and height
-  const imageWidth = 40;
+  const imageWidth = 35;
   const imageHeight = imageWidth;
 
-  // Add image to each leaf
+  // Add image on top of each leaf
   const image = svg.append('g')
     .selectAll('image')
     .data(packedData.leaves())
