@@ -29916,7 +29916,7 @@ __webpack_require__.r(__webpack_exports__);
   const hierarchy = d3__WEBPACK_IMPORTED_MODULE_0__["hierarchy"](root).count();
 
   // set chart width and height
-  const width = 900;
+  const width = 700;
   const height = width;
   
   // pack data
@@ -29936,21 +29936,29 @@ __webpack_require__.r(__webpack_exports__);
     .attr('text-anchor', 'middle');
 
 
-  // map data to circle nodes
+  // map non-leaves to circle nodes
   const node = svg.append('g')
     .selectAll('circle')
-    .data(packedData.descendants().slice(1))
+    // .attr('fill', d => d.children ? "#1db954" : "white")
+
+  // map leaves to circle nodes
+  const leaf = svg.append('g')
+    .selectAll('clipPath')
+    .data(packedData.leaves())
     .enter()
+    .append('clipPath')
+      .attr('id', (d, i) => `clip-${i}`)
     .append('circle')
-      .attr('fill', d => d.children ? "#1db954" : "white")
       .attr('cx', d => `${d.x}`)
       .attr('cy', d => `${d.y}`)
       .attr('r', d => `${d.r}`)
+    
 
   // set image width and height
   const imageWidth = 40;
   const imageHeight = imageWidth;
 
+  // Add image to each leaf
   const image = svg.append('g')
     .selectAll('image')
     .data(packedData.leaves())
@@ -29959,8 +29967,8 @@ __webpack_require__.r(__webpack_exports__);
       .attr('height', imageHeight)
       .attr('href', d => d.data.imageUrl)
       .attr('clip-path', (_, i) => `url(#clip-${i})`)
-      .attr('x', d => d.x - (imageWidth / 2))
-      .attr('y', d => d.y - (imageHeight / 2))
+      .attr('x', d => d.x - imageWidth / 2)
+      .attr('y', d => d.y - imageHeight / 2)
 
   // const labels = parent.selectAll('text')
   //   .data(packedData.descendants().slice(1))
