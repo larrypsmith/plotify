@@ -29878,56 +29878,173 @@ module.exports = str => encodeURIComponent(str).replace(/[!'()*]/g, x => `%${x.c
 
 /***/ }),
 
-/***/ "./src/BubbleChart.js":
-/*!****************************!*\
-  !*** ./src/BubbleChart.js ***!
-  \****************************/
+/***/ "./src/chart.js":
+/*!**********************!*\
+  !*** ./src/chart.js ***!
+  \**********************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return BubbleChart; });
-class BubbleChart {
-  constructor(artists) {
-    this.artists = artists;
-    this.genres = this.getGenres();
+/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
+
+
+/* harmony default export */ __webpack_exports__["default"] = ((data, selector) => {
+
+  // format input data
+  let genres = {};
+
+  data.forEach(artist => {
+    artist.genres.forEach(genre => {
+      if (!genres[genre]) genres[genre] = [];
+      genres[genre].push(artist.name);
+    })
+  });
+
+  data = Object.keys(genres).map(genre => ({
+    name: genre,
+    children: genres[genre]
+  }));
+
+  // create root for hierarchy
+  const root = {children: data}
+
+  // create count-based hierarchy
+  const hierarchy = d3__WEBPACK_IMPORTED_MODULE_0__["hierarchy"](root).count();
+
+  // set chart width and height
+  const width = 500;
+  const height = width;
+  
+  // pack data
+  const pack = d3__WEBPACK_IMPORTED_MODULE_0__["pack"]()
+    .size([width, height])
+    .padding(2);
+  const packedData = pack(hierarchy);
+
+  // append svg to parent and format it
+  const parent = d3__WEBPACK_IMPORTED_MODULE_0__["select"](selector);
+  const svg = parent.append("svg")
+    .style('width', `${width}px`)
+    .style('height', `${height}px`)
+    .attr('font-size', 10)
+    .attr('font-family', 'sans-serif')
+    .attr('text-anchor', 'middle');
+
+  // create color scale
+  const color = d3__WEBPACK_IMPORTED_MODULE_0__["scaleLinear"]()
+    .domain([0, packedData.height])
+    .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
+    .interpolate(d3__WEBPACK_IMPORTED_MODULE_0__["interpolateHcl"])
+
+  // map data to circles
+  const node = svg.append('g')
+    .selectAll('circle')
+    .data(packedData.descendants().slice(1))
+    .join('circle')
+    .attr('fill', d => d.children ? "#1db954" : "white")
+    .attr('transform', d => `translate(${d.x + 1}, ${d.y + 1})`)
+    .attr('r', d => `${d.r}`)
+});
+
+/***/ }),
+
+/***/ "./src/index.js":
+/*!**********************!*\
+  !*** ./src/index.js ***!
+  \**********************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./util */ "./src/util.js");
+/* harmony import */ var _welcome__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./welcome */ "./src/welcome.js");
+/* harmony import */ var _chart__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./chart */ "./src/chart.js");
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const main = document.querySelector('main')
+  main.innerHTML = "";
+  
+  if (Object(_util__WEBPACK_IMPORTED_MODULE_0__["isAuthenticated"])()) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', `https://api.spotify.com/v1/me/top/artists?limit=50`);
+    xhr.setRequestHeader('Authorization', 'Bearer ' + Object(_util__WEBPACK_IMPORTED_MODULE_0__["getAccessToken"])());
+    xhr.onload = function () {
+      const response = JSON.parse(xhr.response);
+      const data = response.items.map(artist => ({
+        name: artist.name,
+        genres: artist.genres
+      }));
+      Object(_chart__WEBPACK_IMPORTED_MODULE_2__["default"])(data, 'main');
+    }
+    xhr.send();
+  } else {
+    main.appendChild(_welcome__WEBPACK_IMPORTED_MODULE_1__["default"].render())
+    const loginButton = document.querySelector('button');
+    loginButton.addEventListener('click', _util__WEBPACK_IMPORTED_MODULE_0__["redirectToLogin"]);
   }
+})
 
-  getGenres() {
-    let genres = {};
+  
 
-    this.artists.forEach(artist => {
-      artist.genres.forEach(genre => {
-        if (!genres[genre]) genres[genre] = [];
-        genres[genre].push(artist.name);
-      })
-    });
+/***/ }),
 
-    return Object.keys(genres).map(genre => ({
-      name: genre,
-      children: genres[genre]
-    }));
-  }
+/***/ "./src/util.js":
+/*!*********************!*\
+  !*** ./src/util.js ***!
+  \*********************/
+/*! exports provided: redirectToLogin, isAuthenticated, getAccessToken, fetchArtists */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-  vennHtml() {
-    const html = Object.keys(this.genres);
-    return html;
-  }
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "redirectToLogin", function() { return redirectToLogin; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isAuthenticated", function() { return isAuthenticated; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAccessToken", function() { return getAccessToken; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fetchArtists", function() { return fetchArtists; });
+/* harmony import */ var query_string__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! query-string */ "./node_modules/query-string/index.js");
+/* harmony import */ var query_string__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(query_string__WEBPACK_IMPORTED_MODULE_0__);
 
-  render() {
-    let container = document.createElement("div");
-    container.className = "venn";
-    container.innerHTML = this.vennHtml();
-    return container;
-  }
+
+const redirectToLogin = (state) => {
+  window.location.href = 'https://accounts.spotify.com/authorize' +
+  '?client_id=45966386e108497e8a2e05195e9b94cc' +
+  '&response_type=token' + 
+  '&redirect_uri=http://127.0.0.1:5500/index.html' +
+  '&scope=user-top-read' +
+  `&state=${state}`;
+}
+
+const isAuthenticated = () => {
+  const hash = window.location.hash.substr(1);
+  return hash.includes('access_token');
+}
+
+const getAccessToken = () => {
+  const hash = window.location.hash.substr(1);
+  const parsedHash = query_string__WEBPACK_IMPORTED_MODULE_0___default.a.parse(hash);
+  return parsedHash.access_token;
+}
+
+const fetchArtists = responseCallback => {
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', `https://api.spotify.com/v1/me/top/artists?limit=50`);
+  xhr.setRequestHeader('Authorization', 'Bearer ' + getAccessToken());
+  xhr.onload = responseCallback;
+  xhr.send();
 }
 
 /***/ }),
 
-/***/ "./src/Welcome.js":
+/***/ "./src/welcome.js":
 /*!************************!*\
-  !*** ./src/Welcome.js ***!
+  !*** ./src/welcome.js ***!
   \************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -29955,130 +30072,6 @@ __webpack_require__.r(__webpack_exports__);
     return container;
   }
 });
-
-/***/ }),
-
-/***/ "./src/index.js":
-/*!**********************!*\
-  !*** ./src/index.js ***!
-  \**********************/
-/*! no exports provided */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./util */ "./src/util.js");
-/* harmony import */ var _BubbleChart__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./BubbleChart */ "./src/BubbleChart.js");
-/* harmony import */ var _Welcome__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Welcome */ "./src/Welcome.js");
-/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
-
-
-
-
-
-
-
-document.addEventListener('DOMContentLoaded', () => {
-  const main = document.querySelector('main')
-  main.innerHTML = "";
-  
-  if (Object(_util__WEBPACK_IMPORTED_MODULE_0__["isAuthenticated"])()) {
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', `https://api.spotify.com/v1/me/top/artists?limit=50`);
-    xhr.setRequestHeader('Authorization', 'Bearer ' + Object(_util__WEBPACK_IMPORTED_MODULE_0__["getAccessToken"])());
-    xhr.onload = function () {
-      const response = JSON.parse(xhr.response);
-      const artists = response.items.map(artist => ({
-        name: artist.name,
-        genres: artist.genres
-      }));
-
-      const chart = new _BubbleChart__WEBPACK_IMPORTED_MODULE_1__["default"](artists);
-      const genres = chart.genres;
-      const root = {children: genres};
-      let hierarchy = d3__WEBPACK_IMPORTED_MODULE_3__["hierarchy"](root).count();
-      const width = 500;
-      const height = width;
-
-      let pack = d3__WEBPACK_IMPORTED_MODULE_3__["pack"]()
-        .size([width, height])
-        .padding(2)
-      let packedData = pack(hierarchy);
-
-      const main = d3__WEBPACK_IMPORTED_MODULE_3__["select"]('main')
-
-      const svg = main.append("svg")
-        .style('width', `${width}px`)
-        .style('height', `${height}px`)
-        .attr('font-size', 10)
-        .attr('font-family', 'sans-serif')
-        .attr('text-anchor', 'middle');
-
-      const color = d3__WEBPACK_IMPORTED_MODULE_3__["scaleLinear"]()
-        .domain([0, packedData.height])
-        .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
-        .interpolate(d3__WEBPACK_IMPORTED_MODULE_3__["interpolateHcl"])
-
-      const node = svg.append('g')
-        .selectAll('circle')
-        .data(packedData.descendants().slice(1))
-        .join('circle')
-          .attr('fill', d => d.children ? color(d.depth) : "white")
-          .attr('transform', d => `translate(${d.x + 1}, ${d.y + 1})`)
-          .attr('r', d => `${d.r}`)
-
-      debugger
-
-    }
-    xhr.send();
-  } else {
-    main.appendChild(_Welcome__WEBPACK_IMPORTED_MODULE_2__["default"].render())
-    const loginButton = document.querySelector('button');
-    loginButton.addEventListener('click', _util__WEBPACK_IMPORTED_MODULE_0__["redirectToLogin"]);
-  }
-})
-
-  
-
-/***/ }),
-
-/***/ "./src/util.js":
-/*!*********************!*\
-  !*** ./src/util.js ***!
-  \*********************/
-/*! exports provided: redirectToLogin, isAuthenticated, getAccessToken */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "redirectToLogin", function() { return redirectToLogin; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isAuthenticated", function() { return isAuthenticated; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAccessToken", function() { return getAccessToken; });
-/* harmony import */ var query_string__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! query-string */ "./node_modules/query-string/index.js");
-/* harmony import */ var query_string__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(query_string__WEBPACK_IMPORTED_MODULE_0__);
-
-
-const redirectToLogin = (state) => {
-  window.location.href = 'https://accounts.spotify.com/authorize' +
-  '?client_id=45966386e108497e8a2e05195e9b94cc' +
-  '&response_type=token' + 
-  '&redirect_uri=https://larrypsmith.github.io/plotify/' +
-  '&scope=user-top-read' +
-  `&state=${state}`;
-}
-
-const isAuthenticated = () => {
-  const hash = window.location.hash.substr(1);
-  return hash.includes('access_token');
-}
-
-const getAccessToken = () => {
-  const hash = window.location.hash.substr(1);
-  const parsedHash = query_string__WEBPACK_IMPORTED_MODULE_0___default.a.parse(hash);
-  return parsedHash.access_token;
-}
-
-
 
 /***/ })
 
