@@ -29928,13 +29928,13 @@ __webpack_require__.r(__webpack_exports__);
 
   // set chart width and height
   const height = window.innerHeight - header.offsetHeight;
-  const width = window.innerWidth;
+  const width = height;
   
   // pack data
   const rootNode = d3__WEBPACK_IMPORTED_MODULE_0__["pack"]()
     .size([width, height])
     .padding(2)
-    (hierarchy);
+    (hierarchy)
 
   let focus = rootNode;
   let view = [rootNode.x, rootNode.y, rootNode.r * 2];
@@ -29942,21 +29942,30 @@ __webpack_require__.r(__webpack_exports__);
   // append svg to parent and format it
   const hook = d3__WEBPACK_IMPORTED_MODULE_0__["select"](selector);
   const svg = hook.append("svg")
-    .attr("viewBox", `0 0 ${width} ${height}`)
     .style('width', `${width}px`)
     .style('height', `${height}px`)
     .attr('font-size', 10)
     .attr('font-family', 'sans-serif')
-    .attr('text-anchor', 'middle');
+    .attr('text-anchor', 'middle')
+    .on('mouseover', function () {
+      d3__WEBPACK_IMPORTED_MODULE_0__["select"](this)
+        .attr('stroke', 'white')
+    })
+    .on('mouseout', function () {
+      d3__WEBPACK_IMPORTED_MODULE_0__["select"](this)
+        .attr('stroke', '#1db954')
+        .attr('cursor', 'auto')
+    })
 
   // map genres to circle nodes
+  const strokeWidth = 2;
   const node = svg.append('g')
     .selectAll('circle')
     .data(rootNode.children)
     .join('circle')
       .attr('fill-opacity', '0')
       .attr('stroke', '#1db954')
-      .attr('stroke-width', '2')
+      .attr('stroke-width', strokeWidth)
       .attr('cx', d => `${d.x}`)
       .attr('cy', d => `${d.y}`)
       .attr('r', d => `${d.r}`)
@@ -30003,12 +30012,11 @@ __webpack_require__.r(__webpack_exports__);
       .attr('x', d => d.x - imageWidth / 2)
       .attr('y', d => d.y - imageHeight / 2)
 
-
-  function zoomTo(d) {
-    const {x, y, r} = d;
-    svg.attr('viewBox', `${x - r - 1} ${y - r - 1} ${r * 2 + 2} ${r * 2 + 2}`)
-    debugger
-  }
+  // function zoomTo(d) {
+  //   const {x, y, r} = d;
+  //   focus = d;
+  //   svg.attr('viewBox', `${x - r - strokeWidth / 2} ${y - r - strokeWidth / 2} ${r * 2 + strokeWidth} ${r * 2 + strokeWidth}`)
+  // }
 });
 
 /***/ }),
@@ -30080,7 +30088,7 @@ const redirectToLogin = (state) => {
   window.location.href = 'https://accounts.spotify.com/authorize' +
   '?client_id=45966386e108497e8a2e05195e9b94cc' +
   '&response_type=token' + 
-  '&redirect_uri=http://127.0.0.1:5500/index.html' +
+  '&redirect_uri=https://larrypsmith.github.io/plotify/' +
   '&scope=user-top-read' +
   `&state=${state}`;
 }

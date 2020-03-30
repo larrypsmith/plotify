@@ -38,13 +38,13 @@ export default (data, selector) => {
 
   // set chart width and height
   const height = window.innerHeight - header.offsetHeight;
-  const width = window.innerWidth;
+  const width = height;
   
   // pack data
   const rootNode = d3.pack()
     .size([width, height])
     .padding(2)
-    (hierarchy);
+    (hierarchy)
 
   let focus = rootNode;
   let view = [rootNode.x, rootNode.y, rootNode.r * 2];
@@ -52,21 +52,30 @@ export default (data, selector) => {
   // append svg to parent and format it
   const hook = d3.select(selector);
   const svg = hook.append("svg")
-    .attr("viewBox", `0 0 ${width} ${height}`)
     .style('width', `${width}px`)
     .style('height', `${height}px`)
     .attr('font-size', 10)
     .attr('font-family', 'sans-serif')
-    .attr('text-anchor', 'middle');
+    .attr('text-anchor', 'middle')
+    .on('mouseover', function () {
+      d3.select(this)
+        .attr('stroke', 'white')
+    })
+    .on('mouseout', function () {
+      d3.select(this)
+        .attr('stroke', '#1db954')
+        .attr('cursor', 'auto')
+    })
 
   // map genres to circle nodes
+  const strokeWidth = 2;
   const node = svg.append('g')
     .selectAll('circle')
     .data(rootNode.children)
     .join('circle')
       .attr('fill-opacity', '0')
       .attr('stroke', '#1db954')
-      .attr('stroke-width', '2')
+      .attr('stroke-width', strokeWidth)
       .attr('cx', d => `${d.x}`)
       .attr('cy', d => `${d.y}`)
       .attr('r', d => `${d.r}`)
@@ -113,10 +122,9 @@ export default (data, selector) => {
       .attr('x', d => d.x - imageWidth / 2)
       .attr('y', d => d.y - imageHeight / 2)
 
-
-  function zoomTo(d) {
-    const {x, y, r} = d;
-    svg.attr('viewBox', `${x - r - 1} ${y - r - 1} ${r * 2 + 2} ${r * 2 + 2}`)
-    debugger
-  }
+  // function zoomTo(d) {
+  //   const {x, y, r} = d;
+  //   focus = d;
+  //   svg.attr('viewBox', `${x - r - strokeWidth / 2} ${y - r - strokeWidth / 2} ${r * 2 + strokeWidth} ${r * 2 + strokeWidth}`)
+  // }
 }
