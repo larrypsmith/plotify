@@ -29920,21 +29920,26 @@ __webpack_require__.r(__webpack_exports__);
   const root = {children: formattedData}
 
   // create count-based hierarchy
-  const hierarchy = d3__WEBPACK_IMPORTED_MODULE_0__["hierarchy"](root).count();
+  const hierarchy = d3__WEBPACK_IMPORTED_MODULE_0__["hierarchy"](root)
+    .count();
 
   // set chart width and height
-  const width = 700;
-  const height = width;
+  const height = window.innerHeight;
+  const width = height;
   
   // pack data
-  const pack = d3__WEBPACK_IMPORTED_MODULE_0__["pack"]()
+  const rootNode = d3__WEBPACK_IMPORTED_MODULE_0__["pack"]()
     .size([width, height])
-    .padding(2);
-  const packedData = pack(hierarchy);
+    .padding(2)
+    (hierarchy);
+
+  let focus = rootNode;
+  let view = [rootNode.x, rootNode.y, rootNode.r * 2];
 
   // append svg to parent and format it
   const hook = d3__WEBPACK_IMPORTED_MODULE_0__["select"](selector);
   const svg = hook.append("svg")
+    .attr("viewBox", `0 0 ${width} ${height}`)
     .style('width', `${width}px`)
     .style('height', `${height}px`)
     .attr('font-size', 10)
@@ -29944,17 +29949,30 @@ __webpack_require__.r(__webpack_exports__);
   // map genres to circle nodes
   const node = svg.append('g')
     .selectAll('circle')
-    .data(packedData.children)
+    .data(rootNode.children)
     .join('circle')
-      .attr('fill', '#1db954')
+      .attr('fill-opacity', '0')
+      .attr('stroke', '#1db954')
+      .attr('stroke-width', '2')
       .attr('cx', d => `${d.x}`)
       .attr('cy', d => `${d.y}`)
       .attr('r', d => `${d.r}`)
+      .on('mouseover', function() {
+        d3__WEBPACK_IMPORTED_MODULE_0__["select"](this)
+          .attr('stroke', 'white')
+          .attr('cursor', 'pointer')
+      })
+      .on('mouseout', function() {
+        d3__WEBPACK_IMPORTED_MODULE_0__["select"](this)
+          .attr('stroke', '#1db954')
+          .attr('cursor', 'auto')
+      })
+      .on('click', d => focus !== d && (zoomTo(d)))
 
   // map leaves (artists) to circle nodes
   const leaf = svg.append('g')
     .selectAll('clipPath')
-    .data(packedData.leaves())
+    .data(rootNode.leaves())
     .enter()
     .append('clipPath')
       .attr('id', (d, i) => `clip-${i}`)
@@ -29964,8 +29982,7 @@ __webpack_require__.r(__webpack_exports__);
       .attr('cx', d => `${d.x}`)
       .attr('cy', d => `${d.y}`)
       .attr('r', d => `${d.r}`)
-    
-
+      
   // set image width and height
   const imageWidth = 35;
   const imageHeight = imageWidth;
@@ -29973,8 +29990,9 @@ __webpack_require__.r(__webpack_exports__);
   // Add image on top of each leaf
   const image = svg.append('g')
     .selectAll('image')
-    .data(packedData.leaves())
+    .data(rootNode.leaves())
     .join('image')
+      .attr('pointer-events', 'none')
       .attr('width', imageWidth)
       .attr('height', imageHeight)
       .attr('href', d => d.data.imageUrl)
@@ -29982,12 +30000,12 @@ __webpack_require__.r(__webpack_exports__);
       .attr('x', d => d.x - imageWidth / 2)
       .attr('y', d => d.y - imageHeight / 2)
 
-  // const labels = parent.selectAll('text')
-  //   .data(packedData.descendants().slice(1))
-  //   .enter()
-  //   .append('text')
-  //   .text(d => d.data.name)
-  //   .attr('transform', d => `translate(${d.x + 1}, ${d.y + 1})`)
+
+  function zoomTo(d) {
+    const {x, y, r} = d;
+    svg.attr('viewBox', `${x - r - 1} ${y - r - 1} ${r * 2 + 2} ${r * 2 + 2}`)
+    debugger
+  }
 });
 
 /***/ }),
@@ -30021,7 +30039,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const response = JSON.parse(xhr.response);
       const data = response.items.map(artist => ({
         name: artist.name,
-        imageUrl: artist.images[2].url,
+        imageUrl: artist.images[1].url,
         genres: artist.genres
       }));
       Object(_chart__WEBPACK_IMPORTED_MODULE_2__["default"])(data, 'main');
@@ -30098,7 +30116,7 @@ __webpack_require__.r(__webpack_exports__);
   renderWelcome: function() {
     const html = `
       <h2>
-        Plotify plots your top Spotify artists in a Venn diagram that compares their genres.
+        Plotify creates a circle packing chart of your favorite Spotify artists and genres.
       </h2>
 
       <button id="login">

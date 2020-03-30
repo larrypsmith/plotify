@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const response = JSON.parse(xhr.response);
       const data = response.items.map(artist => ({
         name: artist.name,
-        imageUrl: artist.images[2].url,
+        imageUrl: artist.images[1].url,
         genres: artist.genres
       }));
       Chart(data, 'main');

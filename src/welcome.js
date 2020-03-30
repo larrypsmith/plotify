@@ -2,7 +2,7 @@ export default {
   renderWelcome: function() {
     const html = `
       <h2>
-        Plotify plots your top Spotify artists in a Venn diagram that compares their genres.
+        Plotify creates a circle packing chart of your favorite Spotify artists and genres.
       </h2>
 
       <button id="login">
