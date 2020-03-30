@@ -29923,9 +29923,12 @@ __webpack_require__.r(__webpack_exports__);
   const hierarchy = d3__WEBPACK_IMPORTED_MODULE_0__["hierarchy"](root)
     .count();
 
+  // get header 
+  const header = document.querySelector("header");
+
   // set chart width and height
-  const height = window.innerHeight;
-  const width = height;
+  const height = window.innerHeight - header.offsetHeight;
+  const width = window.innerWidth;
   
   // pack data
   const rootNode = d3__WEBPACK_IMPORTED_MODULE_0__["pack"]()

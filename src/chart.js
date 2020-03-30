@@ -33,9 +33,12 @@ export default (data, selector) => {
   const hierarchy = d3.hierarchy(root)
     .count();
 
+  // get header 
+  const header = document.querySelector("header");
+
   // set chart width and height
-  const height = window.innerHeight;
-  const width = height;
+  const height = window.innerHeight - header.offsetHeight;
+  const width = window.innerWidth;
   
   // pack data
   const rootNode = d3.pack()
