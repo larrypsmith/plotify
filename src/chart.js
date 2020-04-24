@@ -26,11 +26,8 @@ export default (data, selector) => {
     children: genres[genre]
   }));
   
-  // create root
-  const root = {children: formattedData}
-
   // create count-based hierarchy
-  const hierarchy = d3.hierarchy(root)
+  const hierarchy = d3.hierarchy({ children: formattedData })
     .count();
 
   // get header 
@@ -41,37 +38,31 @@ export default (data, selector) => {
   const width = height;
   
   // pack data
-  const rootNode = d3.pack()
+  const root = d3.pack()
     .size([width, height])
     .padding(2)
     (hierarchy)
 
-  let focus = rootNode;
-  let view = [rootNode.x, rootNode.y, rootNode.r * 2];
+  let focus = root;
+  let view = [root.x, root.y, root.r * 2];
 
   // append svg to parent and format it
   const hook = d3.select(selector);
+
   const svg = hook.append("svg")
-    .style('width', `${width}px`)
-    .style('height', `${height}px`)
+    .attr('width', `${width}px`)
+    .attr('height', `${height}px`)
     .attr('font-size', 10)
     .attr('font-family', 'sans-serif')
     .attr('text-anchor', 'middle')
-    .on('mouseover', function () {
-      d3.select(this)
-        .attr('stroke', 'white')
-    })
-    .on('mouseout', function () {
-      d3.select(this)
-        .attr('stroke', '#1db954')
-        .attr('cursor', 'auto')
-    })
 
   // map genres to circle nodes
   const strokeWidth = 2;
-  const node = svg.append('g')
+  const genreRings = svg
+    .append('g')
+      .attr('id', 'genreRings')
     .selectAll('circle')
-    .data(rootNode.children)
+    .data(root.children)
     .join('circle')
       .attr('fill-opacity', '0')
       .attr('stroke', '#1db954')
@@ -92,12 +83,14 @@ export default (data, selector) => {
       .on('click', d => focus !== d && (zoomTo(d)))
 
   // map leaves (artists) to circle nodes
-  const leaf = svg.append('g')
+  const artistCircles = svg
+    .append('g')
+      .attr('id', 'artistCircles')
     .selectAll('clipPath')
-    .data(rootNode.leaves())
+    .data(root.leaves())
     .enter()
     .append('clipPath')
-      .attr('id', (d, i) => `clip-${i}`)
+      .attr('id', (d, i) => `clip${i}`)
     .append('circle')
       .attr('stroke', 'white')
       .attr('stroke-width', '5')
@@ -109,16 +102,16 @@ export default (data, selector) => {
   const imageWidth = 35;
   const imageHeight = imageWidth;
 
-  // Add image on top of each leaf
+  // Add image on top of each artistCircle
   const image = svg.append('g')
     .selectAll('image')
-    .data(rootNode.leaves())
+    .data(root.leaves())
     .join('image')
       .attr('pointer-events', 'none')
       .attr('width', imageWidth)
       .attr('height', imageHeight)
       .attr('href', d => d.data.imageUrl)
-      .attr('clip-path', (_, i) => `url(#clip-${i})`)
+      .attr('clip-path', (_, i) => `url(#clip${i})`)
       .attr('x', d => d.x - imageWidth / 2)
       .attr('y', d => d.y - imageHeight / 2)
 
