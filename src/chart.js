@@ -34,8 +34,10 @@ export default (data, selector) => {
   const header = document.querySelector("header");
 
   // set chart width and height
-  const height = window.innerHeight - header.offsetHeight;
-  const width = height;
+  // const height = window.innerHeight - header.offsetHeight;
+  // const width = height;
+  const height = 500;
+  const width = 500;
   
   // pack data
   const root = d3.pack()
@@ -44,7 +46,6 @@ export default (data, selector) => {
     (hierarchy)
 
   let focus = root;
-  let view = [root.x, root.y, root.r * 2];
 
   // append svg to parent and format it
   const hook = d3.select(selector);
@@ -52,9 +53,7 @@ export default (data, selector) => {
   const svg = hook.append("svg")
     .attr('width', `${width}px`)
     .attr('height', `${height}px`)
-    .attr('font-size', 10)
-    .attr('font-family', 'sans-serif')
-    .attr('text-anchor', 'middle')
+    .on('click', () => zoomTo(root))
 
   // map genres to circle nodes
   const strokeWidth = 2;
@@ -80,30 +79,62 @@ export default (data, selector) => {
           .attr('stroke', '#1db954')
           .attr('cursor', 'auto')
       })
-      .on('click', d => focus !== d && (zoomTo(d)))
+      .on('click', d => {
+        if (focus !== d) {
+          debugger
+          d3.event.preventDefault();
+          d3.event.stopPropagation();
+          zoomTo(d);
+        }
+      })
+
+  const zoomTo = destination => {
+    focus = destination;
+    const scaleFactor = width / (destination.r * 2);
+    genreRings.transition()
+      .duration(750)
+        .attr('cx', d => (d.x - destination.x) * scaleFactor + (width / 2))
+        .attr('cy', d => (d.y - destination.y) * scaleFactor + (height / 2))
+        .attr('r', d => d.r * scaleFactor)
+    artistImages.transition()
+      .duration(750)
+        .attr('x', d => (d.x - destination.x) * scaleFactor + (width / 2))
+        .attr('y', d => (d.y - destination.y) * scaleFactor + (height / 2))
+        .attr('width', imageWidth * scaleFactor)
+        .attr('height', imageHeight * scaleFactor)
+    artistCircles.transition()
+      .duration(750)
+        .attr('cx', d => (d.x - destination.x) * scaleFactor + (width / 2))
+        .attr('cy', d => (d.y - destination.y) * scaleFactor + (height / 2))
+        .attr('r', d => d.r * scaleFactor)
+  }
 
   // map leaves (artists) to circle nodes
-  const artistCircles = svg
+  const artistsGroup = svg
     .append('g')
       .attr('id', 'artistCircles')
+
+  const artistClipPaths = artistsGroup
     .selectAll('clipPath')
     .data(root.leaves())
-    .enter()
-    .append('clipPath')
-      .attr('id', (d, i) => `clip${i}`)
+    .join('clipPath')
+      .attr('id', (_, i) => `clip${i}`)
+
+  const artistCircles = artistClipPaths
     .append('circle')
-      .attr('stroke', 'white')
-      .attr('stroke-width', '5')
       .attr('cx', d => `${d.x}`)
       .attr('cy', d => `${d.y}`)
       .attr('r', d => `${d.r}`)
-      
+
+
   // set image width and height
   const imageWidth = 35;
   const imageHeight = imageWidth;
 
   // Add image on top of each artistCircle
-  const image = svg.append('g')
+  const artistImages = svg
+    .append('g')
+      .attr('id', 'artistImages')
     .selectAll('image')
     .data(root.leaves())
     .join('image')
@@ -114,10 +145,4 @@ export default (data, selector) => {
       .attr('clip-path', (_, i) => `url(#clip${i})`)
       .attr('x', d => d.x - imageWidth / 2)
       .attr('y', d => d.y - imageHeight / 2)
-
-  // function zoomTo(d) {
-  //   const {x, y, r} = d;
-  //   focus = d;
-  //   svg.attr('viewBox', `${x - r - strokeWidth / 2} ${y - r - strokeWidth / 2} ${r * 2 + strokeWidth} ${r * 2 + strokeWidth}`)
-  // }
 }
