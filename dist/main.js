@@ -29920,13 +29920,12 @@ __webpack_require__.r(__webpack_exports__);
   const hierarchy = d3__WEBPACK_IMPORTED_MODULE_0__["hierarchy"]({ children: formattedData })
     .count();
 
-  // set chart width and height
-  const height = 500;
+  // set chart 
   const width = 500;
   
   // pack data
   const root = d3__WEBPACK_IMPORTED_MODULE_0__["pack"]()
-    .size([width, height])
+    .size([width, width])
     .padding(2)
     (hierarchy)
 
@@ -29935,7 +29934,7 @@ __webpack_require__.r(__webpack_exports__);
   const svg = d3__WEBPACK_IMPORTED_MODULE_0__["select"](hook)
     .append("svg")
       .attr('width', `${width}px`)
-      .attr('height', `${height}px`)
+      .attr('height', `${width}px`)
     .on('click', () => zoomTo(root))
 
   // map genres to circle nodes
@@ -29949,48 +29948,45 @@ __webpack_require__.r(__webpack_exports__);
       .attr('fill-opacity', '0')
       .attr('stroke', '#1db954')
       .attr('stroke-width', strokeWidth)
-      .attr('cx', d => d.x)
-      .attr('cy', d => d.y)
-      .attr('r', d => d.r)
-      .on('mouseover', function() {
-        d3__WEBPACK_IMPORTED_MODULE_0__["select"](this)
-          .attr('stroke', 'white')
-          .attr('cursor', 'pointer')
-      })
-      .on('mouseout', function() {
-        d3__WEBPACK_IMPORTED_MODULE_0__["select"](this)
-          .attr('stroke', '#1db954')
-          .attr('cursor', 'auto')
-      })
-      .on('click', d => {
-        if (focus !== d) {
-          d3__WEBPACK_IMPORTED_MODULE_0__["event"].preventDefault();
-          d3__WEBPACK_IMPORTED_MODULE_0__["event"].stopPropagation();
-          zoomTo(d);
-        }
-      })
+    .on('mouseover', function() {
+      d3__WEBPACK_IMPORTED_MODULE_0__["select"](this)
+        .attr('stroke', 'white')
+        .attr('cursor', 'pointer')
+    })
+    .on('mouseout', function() {
+      d3__WEBPACK_IMPORTED_MODULE_0__["select"](this)
+        .attr('stroke', '#1db954')
+        .attr('cursor', 'auto')
+    })
+    .on('click', d => {
+      if (focus !== d) {
+        d3__WEBPACK_IMPORTED_MODULE_0__["event"].preventDefault();
+        d3__WEBPACK_IMPORTED_MODULE_0__["event"].stopPropagation();
+        zoomTo(d);
+      }
+    })
 
   const genreTitles = genreRings.append('title')
     .text(d => d.data.name)
 
-  // map leaves (artists) to circle nodes
-  const artistsGroup = svg
+  const artistCircles = svg
     .append('g')
       .attr('id', 'artistCircles')
-
-  const artistCircles = artistsGroup
     .selectAll('clipPath')
     .data(root.leaves())
     .join('clipPath')
       .attr('id', (_, i) => `clip${i}`)
     .append('circle')
+
+  // move nodes to initial positions
+  svg.selectAll('circle')
+    .join('circle')
       .attr('cx', d => d.x)
       .attr('cy', d => d.y)
       .attr('r', d => d.r)
 
-  // set image width and height
+  // set image width
   const imageWidth = 30;
-  const imageHeight = imageWidth;
 
   // Add image on top of each artistCircle
   const artistImages = svg
@@ -30000,13 +29996,11 @@ __webpack_require__.r(__webpack_exports__);
     .data(root.leaves())
     .join('image')
       .attr('width', imageWidth)
-      .attr('height', imageHeight)
+      .attr('height', imageWidth)
       .attr('href', d => d.data.imageUrl)
       .attr('clip-path', (_, i) => `url(#clip${i})`)
       .attr('x', d => d.x - imageWidth / 2)
-      .attr('y', d => d.y - imageHeight / 2)
-
-  debugger
+      .attr('y', d => d.y - imageWidth / 2)
 
   const artistTitles = artistImages.append('title')
     .text(d => d.data.name)
@@ -30014,29 +30008,25 @@ __webpack_require__.r(__webpack_exports__);
   const zoomTo = destination => {
     focus = destination;
     const scaleFactor = width / (destination.r * 2);
-    genreRings.transition()
-      .duration(750)
-      .attr('cx', d => (d.x - destination.x) * scaleFactor + (width / 2))
-      .attr('cy', d => (d.y - destination.y) * scaleFactor + (height / 2))
-      .attr('r', d => d.r * scaleFactor)
-    artistImages.transition()
-      .duration(750)
-      .attr('x', d => (d.x - imageWidth / 2 - destination.x) * scaleFactor + width / 2)
-      .attr('y', d => (d.y - imageHeight / 2 - destination.y) * scaleFactor + height / 2)
-      .attr('width', imageWidth * scaleFactor)
-      .attr('height', imageHeight * scaleFactor)
-      .attr('pointer-events', focus === root ? 'none' : 'visiblePainted')
-    artistCircles.transition()
-      .duration(750)
-      .attr('cx', d => (d.x - destination.x) * scaleFactor + (width / 2))
-      .attr('cy', d => (d.y - destination.y) * scaleFactor + (height / 2))
-      .attr('r', d => d.r * scaleFactor)
-      .attr('pointer-events', focus === root ? 'none' : 'visiblePainted')
+    const transition = d3__WEBPACK_IMPORTED_MODULE_0__["transition"]().duration(750) 
+    const translateCircle = (start, end) => (start - end) * scaleFactor + width / 2;
+    const translateImage = (start, end) => (start - end - imageWidth / 2) * scaleFactor + width / 2;
+
+    svg.selectAll('circle')
+      .transition(transition)
+        .attr('cx', d => translateCircle(d.x, destination.x))
+        .attr('cy', d => translateCircle(d.y, destination.y))
+        .attr('r', d => d.r * scaleFactor)
+    artistImages
+      .transition(transition)
+        .attr('x', d => translateImage(d.x, destination.x))
+        .attr('y', d => translateImage(d.y, destination.y))
+        .attr('width', imageWidth * scaleFactor)
+        .attr('height', imageWidth * scaleFactor)
+        .attr('pointer-events', focus === root ? 'none' : 'visiblePainted')
   }
-    
+
   zoomTo(root)
-
-
 });
 
 /***/ }),
