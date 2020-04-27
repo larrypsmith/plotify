@@ -29949,9 +29949,9 @@ __webpack_require__.r(__webpack_exports__);
       .attr('fill-opacity', '0')
       .attr('stroke', '#1db954')
       .attr('stroke-width', strokeWidth)
-      .attr('cx', d => `${d.x}`)
-      .attr('cy', d => `${d.y}`)
-      .attr('r', d => `${d.r}`)
+      .attr('cx', d => d.x)
+      .attr('cy', d => d.y)
+      .attr('r', d => d.r)
       .on('mouseover', function() {
         d3__WEBPACK_IMPORTED_MODULE_0__["select"](this)
           .attr('stroke', 'white')
@@ -29984,9 +29984,9 @@ __webpack_require__.r(__webpack_exports__);
     .join('clipPath')
       .attr('id', (_, i) => `clip${i}`)
     .append('circle')
-      .attr('cx', d => `${d.x}`)
-      .attr('cy', d => `${d.y}`)
-      .attr('r', d => `${d.r}`)
+      .attr('cx', d => d.x)
+      .attr('cy', d => d.y)
+      .attr('r', d => d.r)
 
   // set image width and height
   const imageWidth = 30;
@@ -30005,6 +30005,8 @@ __webpack_require__.r(__webpack_exports__);
       .attr('clip-path', (_, i) => `url(#clip${i})`)
       .attr('x', d => d.x - imageWidth / 2)
       .attr('y', d => d.y - imageHeight / 2)
+
+  debugger
 
   const artistTitles = artistImages.append('title')
     .text(d => d.data.name)
