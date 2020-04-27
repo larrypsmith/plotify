@@ -6,6 +6,7 @@ export const redirectToLogin = (state) => {
   '&response_type=token' + 
   '&redirect_uri=http://127.0.0.1:5500/index.html' +
   '&scope=user-top-read' +
+  '&limit=50' +
   `&state=${state}`;
 }
 
