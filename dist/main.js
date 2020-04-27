@@ -29890,7 +29890,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
 
 
-/* harmony default export */ __webpack_exports__["default"] = ((data, selector) => {
+/* harmony default export */ __webpack_exports__["default"] = ((data, hook) => {
   // create genres object
   let genres = {};
 
@@ -29920,12 +29920,9 @@ __webpack_require__.r(__webpack_exports__);
   const hierarchy = d3__WEBPACK_IMPORTED_MODULE_0__["hierarchy"]({ children: formattedData })
     .count();
 
-  // get header 
-  const header = document.querySelector("header");
-
   // set chart width and height
-  const height = window.innerHeight - header.offsetHeight;
-  const width = height;
+  const height = 500;
+  const width = 500;
   
   // pack data
   const root = d3__WEBPACK_IMPORTED_MODULE_0__["pack"]()
@@ -29934,17 +29931,12 @@ __webpack_require__.r(__webpack_exports__);
     (hierarchy)
 
   let focus = root;
-  let view = [root.x, root.y, root.r * 2];
 
-  // append svg to parent and format it
-  const hook = d3__WEBPACK_IMPORTED_MODULE_0__["select"](selector);
-
-  const svg = hook.append("svg")
-    .attr('width', `${width}px`)
-    .attr('height', `${height}px`)
-    .attr('font-size', 10)
-    .attr('font-family', 'sans-serif')
-    .attr('text-anchor', 'middle')
+  const svg = d3__WEBPACK_IMPORTED_MODULE_0__["select"](hook)
+    .append("svg")
+      .attr('width', `${width}px`)
+      .attr('height', `${height}px`)
+    .on('click', () => zoomTo(root))
 
   // map genres to circle nodes
   const strokeWidth = 2;
@@ -29957,9 +29949,9 @@ __webpack_require__.r(__webpack_exports__);
       .attr('fill-opacity', '0')
       .attr('stroke', '#1db954')
       .attr('stroke-width', strokeWidth)
-      .attr('cx', d => `${d.x}`)
-      .attr('cy', d => `${d.y}`)
-      .attr('r', d => `${d.r}`)
+      .attr('cx', d => d.x)
+      .attr('cy', d => d.y)
+      .attr('r', d => d.r)
       .on('mouseover', function() {
         d3__WEBPACK_IMPORTED_MODULE_0__["select"](this)
           .attr('stroke', 'white')
@@ -29970,34 +29962,43 @@ __webpack_require__.r(__webpack_exports__);
           .attr('stroke', '#1db954')
           .attr('cursor', 'auto')
       })
-      .on('click', d => focus !== d && (zoomTo(d)))
+      .on('click', d => {
+        if (focus !== d) {
+          d3__WEBPACK_IMPORTED_MODULE_0__["event"].preventDefault();
+          d3__WEBPACK_IMPORTED_MODULE_0__["event"].stopPropagation();
+          zoomTo(d);
+        }
+      })
+
+  const genreTitles = genreRings.append('title')
+    .text(d => d.data.name)
 
   // map leaves (artists) to circle nodes
-  const artistCircles = svg
+  const artistsGroup = svg
     .append('g')
       .attr('id', 'artistCircles')
+
+  const artistCircles = artistsGroup
     .selectAll('clipPath')
     .data(root.leaves())
-    .enter()
-    .append('clipPath')
-      .attr('id', (d, i) => `clip${i}`)
+    .join('clipPath')
+      .attr('id', (_, i) => `clip${i}`)
     .append('circle')
-      .attr('stroke', 'white')
-      .attr('stroke-width', '5')
-      .attr('cx', d => `${d.x}`)
-      .attr('cy', d => `${d.y}`)
-      .attr('r', d => `${d.r}`)
-      
+      .attr('cx', d => d.x)
+      .attr('cy', d => d.y)
+      .attr('r', d => d.r)
+
   // set image width and height
-  const imageWidth = 35;
+  const imageWidth = 30;
   const imageHeight = imageWidth;
 
   // Add image on top of each artistCircle
-  const image = svg.append('g')
+  const artistImages = svg
+    .append('g')
+      .attr('id', 'artistImages')
     .selectAll('image')
     .data(root.leaves())
     .join('image')
-      .attr('pointer-events', 'none')
       .attr('width', imageWidth)
       .attr('height', imageHeight)
       .attr('href', d => d.data.imageUrl)
@@ -30005,11 +30006,37 @@ __webpack_require__.r(__webpack_exports__);
       .attr('x', d => d.x - imageWidth / 2)
       .attr('y', d => d.y - imageHeight / 2)
 
-  // function zoomTo(d) {
-  //   const {x, y, r} = d;
-  //   focus = d;
-  //   svg.attr('viewBox', `${x - r - strokeWidth / 2} ${y - r - strokeWidth / 2} ${r * 2 + strokeWidth} ${r * 2 + strokeWidth}`)
-  // }
+  debugger
+
+  const artistTitles = artistImages.append('title')
+    .text(d => d.data.name)
+
+  const zoomTo = destination => {
+    focus = destination;
+    const scaleFactor = width / (destination.r * 2);
+    genreRings.transition()
+      .duration(750)
+      .attr('cx', d => (d.x - destination.x) * scaleFactor + (width / 2))
+      .attr('cy', d => (d.y - destination.y) * scaleFactor + (height / 2))
+      .attr('r', d => d.r * scaleFactor)
+    artistImages.transition()
+      .duration(750)
+      .attr('x', d => (d.x - imageWidth / 2 - destination.x) * scaleFactor + width / 2)
+      .attr('y', d => (d.y - imageHeight / 2 - destination.y) * scaleFactor + height / 2)
+      .attr('width', imageWidth * scaleFactor)
+      .attr('height', imageHeight * scaleFactor)
+      .attr('pointer-events', focus === root ? 'none' : 'visiblePainted')
+    artistCircles.transition()
+      .duration(750)
+      .attr('cx', d => (d.x - destination.x) * scaleFactor + (width / 2))
+      .attr('cy', d => (d.y - destination.y) * scaleFactor + (height / 2))
+      .attr('r', d => d.r * scaleFactor)
+      .attr('pointer-events', focus === root ? 'none' : 'visiblePainted')
+  }
+    
+  zoomTo(root)
+
+
 });
 
 /***/ }),
@@ -30046,7 +30073,8 @@ document.addEventListener('DOMContentLoaded', () => {
         imageUrl: artist.images[1].url,
         genres: artist.genres
       }));
-      Object(_chart__WEBPACK_IMPORTED_MODULE_2__["default"])(data, 'main');
+      const main = document.querySelector('main')
+      Object(_chart__WEBPACK_IMPORTED_MODULE_2__["default"])(data, main);
     }
     xhr.send();
   } else {
@@ -30083,6 +30111,7 @@ const redirectToLogin = (state) => {
   '&response_type=token' + 
   '&redirect_uri=http://127.0.0.1:5500/index.html' +
   '&scope=user-top-read' +
+  '&limit=50' +
   `&state=${state}`;
 }
 

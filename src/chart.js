@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 
-export default (data, selector) => {
+export default (data, hook) => {
   // create genres object
   let genres = {};
 
@@ -30,12 +30,9 @@ export default (data, selector) => {
   const hierarchy = d3.hierarchy({ children: formattedData })
     .count();
 
-  // get header 
-  const header = document.querySelector("header");
-
   // set chart width and height
-  const height = window.innerHeight - header.offsetHeight;
-  const width = height;
+  const height = 500;
+  const width = 500;
   
   // pack data
   const root = d3.pack()
@@ -44,17 +41,12 @@ export default (data, selector) => {
     (hierarchy)
 
   let focus = root;
-  let view = [root.x, root.y, root.r * 2];
 
-  // append svg to parent and format it
-  const hook = d3.select(selector);
-
-  const svg = hook.append("svg")
-    .attr('width', `${width}px`)
-    .attr('height', `${height}px`)
-    .attr('font-size', 10)
-    .attr('font-family', 'sans-serif')
-    .attr('text-anchor', 'middle')
+  const svg = d3.select(hook)
+    .append("svg")
+      .attr('width', `${width}px`)
+      .attr('height', `${height}px`)
+    .on('click', () => zoomTo(root))
 
   // map genres to circle nodes
   const strokeWidth = 2;
@@ -67,9 +59,9 @@ export default (data, selector) => {
       .attr('fill-opacity', '0')
       .attr('stroke', '#1db954')
       .attr('stroke-width', strokeWidth)
-      .attr('cx', d => `${d.x}`)
-      .attr('cy', d => `${d.y}`)
-      .attr('r', d => `${d.r}`)
+      .attr('cx', d => d.x)
+      .attr('cy', d => d.y)
+      .attr('r', d => d.r)
       .on('mouseover', function() {
         d3.select(this)
           .attr('stroke', 'white')
@@ -80,34 +72,43 @@ export default (data, selector) => {
           .attr('stroke', '#1db954')
           .attr('cursor', 'auto')
       })
-      .on('click', d => focus !== d && (zoomTo(d)))
+      .on('click', d => {
+        if (focus !== d) {
+          d3.event.preventDefault();
+          d3.event.stopPropagation();
+          zoomTo(d);
+        }
+      })
+
+  const genreTitles = genreRings.append('title')
+    .text(d => d.data.name)
 
   // map leaves (artists) to circle nodes
-  const artistCircles = svg
+  const artistsGroup = svg
     .append('g')
       .attr('id', 'artistCircles')
+
+  const artistCircles = artistsGroup
     .selectAll('clipPath')
     .data(root.leaves())
-    .enter()
-    .append('clipPath')
-      .attr('id', (d, i) => `clip${i}`)
+    .join('clipPath')
+      .attr('id', (_, i) => `clip${i}`)
     .append('circle')
-      .attr('stroke', 'white')
-      .attr('stroke-width', '5')
-      .attr('cx', d => `${d.x}`)
-      .attr('cy', d => `${d.y}`)
-      .attr('r', d => `${d.r}`)
-      
+      .attr('cx', d => d.x)
+      .attr('cy', d => d.y)
+      .attr('r', d => d.r)
+
   // set image width and height
-  const imageWidth = 35;
+  const imageWidth = 30;
   const imageHeight = imageWidth;
 
   // Add image on top of each artistCircle
-  const image = svg.append('g')
+  const artistImages = svg
+    .append('g')
+      .attr('id', 'artistImages')
     .selectAll('image')
     .data(root.leaves())
     .join('image')
-      .attr('pointer-events', 'none')
       .attr('width', imageWidth)
       .attr('height', imageHeight)
       .attr('href', d => d.data.imageUrl)
@@ -115,9 +116,35 @@ export default (data, selector) => {
       .attr('x', d => d.x - imageWidth / 2)
       .attr('y', d => d.y - imageHeight / 2)
 
-  // function zoomTo(d) {
-  //   const {x, y, r} = d;
-  //   focus = d;
-  //   svg.attr('viewBox', `${x - r - strokeWidth / 2} ${y - r - strokeWidth / 2} ${r * 2 + strokeWidth} ${r * 2 + strokeWidth}`)
-  // }
+  debugger
+
+  const artistTitles = artistImages.append('title')
+    .text(d => d.data.name)
+
+  const zoomTo = destination => {
+    focus = destination;
+    const scaleFactor = width / (destination.r * 2);
+    genreRings.transition()
+      .duration(750)
+      .attr('cx', d => (d.x - destination.x) * scaleFactor + (width / 2))
+      .attr('cy', d => (d.y - destination.y) * scaleFactor + (height / 2))
+      .attr('r', d => d.r * scaleFactor)
+    artistImages.transition()
+      .duration(750)
+      .attr('x', d => (d.x - imageWidth / 2 - destination.x) * scaleFactor + width / 2)
+      .attr('y', d => (d.y - imageHeight / 2 - destination.y) * scaleFactor + height / 2)
+      .attr('width', imageWidth * scaleFactor)
+      .attr('height', imageHeight * scaleFactor)
+      .attr('pointer-events', focus === root ? 'none' : 'visiblePainted')
+    artistCircles.transition()
+      .duration(750)
+      .attr('cx', d => (d.x - destination.x) * scaleFactor + (width / 2))
+      .attr('cy', d => (d.y - destination.y) * scaleFactor + (height / 2))
+      .attr('r', d => d.r * scaleFactor)
+      .attr('pointer-events', focus === root ? 'none' : 'visiblePainted')
+  }
+    
+  zoomTo(root)
+
+
 }

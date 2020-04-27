@@ -18,7 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
         imageUrl: artist.images[1].url,
         genres: artist.genres
       }));
-      Chart(data, 'main');
+      const main = document.querySelector('main')
+      Chart(data, main);
     }
     xhr.send();
   } else {
