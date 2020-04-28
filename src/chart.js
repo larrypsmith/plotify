@@ -77,13 +77,13 @@ export default (data, hook) => {
         d3.select(this)
           .attr('stroke', '#1db954')
           .attr('cursor', 'auto')
+        bars
+          .attr('fill', 'white')
       })
       .on('click', d => {
-        if (focus !== d) {
-          d3.event.preventDefault();
-          d3.event.stopPropagation();
-          zoomTo(d);
-        }
+        d3.event.preventDefault();
+        d3.event.stopPropagation();
+        zoomTo(d);
       })
 
   const genreTitles = genreRings.append('title')
@@ -126,6 +126,7 @@ export default (data, hook) => {
     .text(d => d.data.name)
 
   const zoomTo = destination => {
+    if (focus === destination) destination = root;
     focus = destination;
     const scaleFactor = width / (destination.r * 2);
     const transition = d3.transition().duration(750) 
@@ -170,24 +171,33 @@ export default (data, hook) => {
   
   const innerChart = barChart.append('g') 
     .attr('transform', `translate(${margin.left} ${margin.top})`)
-  
+  debugger
   const bars = innerChart.append('g')
     .selectAll('rect')
-    .data(formattedData)
+    .data(root.children)
     .join('rect')
       .attr('width', d => xScale(d.children.length))
       .attr('height', yScale.bandwidth())
-      .attr('y', d => yScale(d.name))
+      .attr('y', d => yScale(d.data.name))
       .attr('fill', 'white')
     .on('mouseover', function(datum) {
       d3.select(this)
         .attr('fill', green)
+        .attr('cursor', 'pointer')
       genreRings
-        .attr('stroke', d => d.data.name === datum.name ? 'white' : green)
+        .attr('stroke', d => d.data.name === datum.data.name ? 'white' : green)
     })
     .on('mouseout', function() {
       d3.select(this)
         .attr('fill', 'white')
+        .attr('cursor', 'auto')
+      genreRings
+        .attr('stroke', green)
+    })
+    .on('click', d => {
+      d3.event.preventDefault();
+      d3.event.stopPropagation();
+      zoomTo(d)
     });
   
   const yAxisG = innerChart.append('g')
