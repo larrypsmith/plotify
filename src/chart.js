@@ -212,8 +212,5 @@ export default (data, hook) => {
     .attr('fill', 'white')
     .attr('y', -5)  
   
-
-
-
   zoomTo(root)
 }
