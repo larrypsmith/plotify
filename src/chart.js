@@ -66,11 +66,12 @@ export default (data, hook) => {
       .attr('cx', d => d.x)
       .attr('cy', d => d.y)
       .attr('r', d => d.r)
-      // .attr('id', (_, i) => `bar${i}`)
-      .on('mouseover', function() {
+      .on('mouseover', function(datum) {
         d3.select(this)
           .attr('stroke', 'white')
           .attr('cursor', 'pointer')
+        bars
+          .attr('fill', d => d.name === datum.data.name ? green : 'white')
       })
       .on('mouseout', function() {
         d3.select(this)
@@ -178,10 +179,11 @@ export default (data, hook) => {
       .attr('height', yScale.bandwidth())
       .attr('y', d => yScale(d.name))
       .attr('fill', 'white')
-    .on('mouseover', function() {
+    .on('mouseover', function(datum) {
       d3.select(this)
         .attr('fill', green)
-      d3.select()
+      genreRings
+        .attr('stroke', d => d.data.name === datum.name ? 'white' : green)
     })
     .on('mouseout', function() {
       d3.select(this)
