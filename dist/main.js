@@ -29911,18 +29911,20 @@ __webpack_require__.r(__webpack_exports__);
   })
 
   // format data for D3 hierarchy
-  const formattedData = Object.keys(genres).map(genre => ({
-    name: genre,
-    children: genres[genre]
-  }));
+  const formattedData = Object.keys(genres)
+    .map(genre => ({
+      name: genre,
+      children: genres[genre]
+    }))
+    .sort((a, b) => d3__WEBPACK_IMPORTED_MODULE_0__["descending"](a.children.length, b.children.length))
   
   // create count-based hierarchy
   const hierarchy = d3__WEBPACK_IMPORTED_MODULE_0__["hierarchy"]({ children: formattedData })
     .count();
 
   // set chart width and height
-  const height = 500;
   const width = 500;
+  const height = 500;
   
   // pack data
   const root = d3__WEBPACK_IMPORTED_MODULE_0__["pack"]()
@@ -29934,9 +29936,11 @@ __webpack_require__.r(__webpack_exports__);
 
   const svg = d3__WEBPACK_IMPORTED_MODULE_0__["select"](hook)
     .append("svg")
-      .attr('width', `${width}px`)
-      .attr('height', `${height}px`)
+      .attr('width', width)
+      .attr('height', height)
     .on('click', () => zoomTo(root))
+
+  const green = '#1db954'
 
   // map genres to circle nodes
   const strokeWidth = 2;
@@ -29947,11 +29951,12 @@ __webpack_require__.r(__webpack_exports__);
     .data(root.children)
     .join('circle')
       .attr('fill-opacity', '0')
-      .attr('stroke', '#1db954')
+      .attr('stroke', green)
       .attr('stroke-width', strokeWidth)
       .attr('cx', d => d.x)
       .attr('cy', d => d.y)
       .attr('r', d => d.r)
+      // .attr('id', (_, i) => `bar${i}`)
       .on('mouseover', function() {
         d3__WEBPACK_IMPORTED_MODULE_0__["select"](this)
           .attr('stroke', 'white')
@@ -30006,8 +30011,6 @@ __webpack_require__.r(__webpack_exports__);
       .attr('x', d => d.x - imageWidth / 2)
       .attr('y', d => d.y - imageHeight / 2)
 
-  debugger
-
   const artistTitles = artistImages.append('title')
     .text(d => d.data.name)
 
@@ -30035,6 +30038,73 @@ __webpack_require__.r(__webpack_exports__);
   }
     
   zoomTo(root)
+
+  const margin = { top: 50, right: 50, bottom: 50, left: 150 }
+  const innerWidth = width - margin.right - margin.left
+  const innerHeight = height - margin.top - margin.bottom
+
+  const xScale = d3__WEBPACK_IMPORTED_MODULE_0__["scaleLinear"]()
+    .domain([0, d3__WEBPACK_IMPORTED_MODULE_0__["max"](formattedData, d => d.children.length)])
+    .range([0, innerWidth]);
+
+  const yScale = d3__WEBPACK_IMPORTED_MODULE_0__["scaleBand"]()
+    .domain(formattedData.map(d => d.name))
+    .range([0, innerHeight])
+    .padding(0.1)
+  
+  const barChart = d3__WEBPACK_IMPORTED_MODULE_0__["select"](hook)
+    .append('svg')
+      .attr('width', width)
+      .attr('height', height)
+      .style('color', 'white')
+      .attr('class', 'bar-chart')
+  
+  const innerChart = barChart.append('g') 
+    .attr('transform', `translate(${margin.left} ${margin.top})`)
+  
+  const bars = innerChart.append('g')
+    .selectAll('rect')
+    .data(formattedData)
+    .join('rect')
+      .attr('width', d => xScale(d.children.length))
+      .attr('height', yScale.bandwidth())
+      .attr('y', d => yScale(d.name))
+      .attr('fill', 'white')
+    .on('mouseover', function() {
+      d3__WEBPACK_IMPORTED_MODULE_0__["select"](this)
+        .attr('fill', green)
+      d3__WEBPACK_IMPORTED_MODULE_0__["select"]()
+    })
+    .on('mouseout', function() {
+      d3__WEBPACK_IMPORTED_MODULE_0__["select"](this)
+        .attr('fill', 'white')
+    });
+  
+  const yAxisG = innerChart.append('g')
+    .call(d3__WEBPACK_IMPORTED_MODULE_0__["axisLeft"](yScale))
+
+  yAxisG.selectAll('.domain, .tick line')
+    .remove();
+
+  const xAxisG = innerChart.append('g')
+    .call(d3__WEBPACK_IMPORTED_MODULE_0__["axisBottom"](xScale))
+      .attr('transform', `translate(0, ${innerHeight})`)
+
+  xAxisG.selectAll('.domain')
+    .remove();
+
+  xAxisG.append('text')
+    .text('Number of Artists')
+    .attr('fill', 'white')
+    .attr('x', innerWidth / 2)
+    .attr('y', 30)
+
+  innerChart.append('text')
+    .text('Top genres by number of artists')
+    .attr('fill', 'white')
+    .attr('y', -5)  
+  
+
 
 
 });

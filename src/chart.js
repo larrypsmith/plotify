@@ -21,18 +21,20 @@ export default (data, hook) => {
   })
 
   // format data for D3 hierarchy
-  const formattedData = Object.keys(genres).map(genre => ({
-    name: genre,
-    children: genres[genre]
-  }));
+  const formattedData = Object.keys(genres)
+    .map(genre => ({
+      name: genre,
+      children: genres[genre]
+    }))
+    .sort((a, b) => d3.descending(a.children.length, b.children.length))
   
   // create count-based hierarchy
   const hierarchy = d3.hierarchy({ children: formattedData })
     .count();
 
   // set chart width and height
-  const height = 500;
   const width = 500;
+  const height = 500;
   
   // pack data
   const root = d3.pack()
@@ -44,9 +46,11 @@ export default (data, hook) => {
 
   const svg = d3.select(hook)
     .append("svg")
-      .attr('width', `${width}px`)
-      .attr('height', `${height}px`)
+      .attr('width', width)
+      .attr('height', height)
     .on('click', () => zoomTo(root))
+
+  const green = '#1db954'
 
   // map genres to circle nodes
   const strokeWidth = 2;
@@ -57,11 +61,12 @@ export default (data, hook) => {
     .data(root.children)
     .join('circle')
       .attr('fill-opacity', '0')
-      .attr('stroke', '#1db954')
+      .attr('stroke', green)
       .attr('stroke-width', strokeWidth)
       .attr('cx', d => d.x)
       .attr('cy', d => d.y)
       .attr('r', d => d.r)
+      // .attr('id', (_, i) => `bar${i}`)
       .on('mouseover', function() {
         d3.select(this)
           .attr('stroke', 'white')
@@ -116,8 +121,6 @@ export default (data, hook) => {
       .attr('x', d => d.x - imageWidth / 2)
       .attr('y', d => d.y - imageHeight / 2)
 
-  debugger
-
   const artistTitles = artistImages.append('title')
     .text(d => d.data.name)
 
@@ -145,6 +148,73 @@ export default (data, hook) => {
   }
     
   zoomTo(root)
+
+  const margin = { top: 50, right: 50, bottom: 50, left: 150 }
+  const innerWidth = width - margin.right - margin.left
+  const innerHeight = height - margin.top - margin.bottom
+
+  const xScale = d3.scaleLinear()
+    .domain([0, d3.max(formattedData, d => d.children.length)])
+    .range([0, innerWidth]);
+
+  const yScale = d3.scaleBand()
+    .domain(formattedData.map(d => d.name))
+    .range([0, innerHeight])
+    .padding(0.1)
+  
+  const barChart = d3.select(hook)
+    .append('svg')
+      .attr('width', width)
+      .attr('height', height)
+      .style('color', 'white')
+      .attr('class', 'bar-chart')
+  
+  const innerChart = barChart.append('g') 
+    .attr('transform', `translate(${margin.left} ${margin.top})`)
+  
+  const bars = innerChart.append('g')
+    .selectAll('rect')
+    .data(formattedData)
+    .join('rect')
+      .attr('width', d => xScale(d.children.length))
+      .attr('height', yScale.bandwidth())
+      .attr('y', d => yScale(d.name))
+      .attr('fill', 'white')
+    .on('mouseover', function() {
+      d3.select(this)
+        .attr('fill', green)
+      d3.select()
+    })
+    .on('mouseout', function() {
+      d3.select(this)
+        .attr('fill', 'white')
+    });
+  
+  const yAxisG = innerChart.append('g')
+    .call(d3.axisLeft(yScale))
+
+  yAxisG.selectAll('.domain, .tick line')
+    .remove();
+
+  const xAxisG = innerChart.append('g')
+    .call(d3.axisBottom(xScale))
+      .attr('transform', `translate(0, ${innerHeight})`)
+
+  xAxisG.selectAll('.domain')
+    .remove();
+
+  xAxisG.append('text')
+    .text('Number of Artists')
+    .attr('fill', 'white')
+    .attr('x', innerWidth / 2)
+    .attr('y', 30)
+
+  innerChart.append('text')
+    .text('Top genres by number of artists')
+    .attr('fill', 'white')
+    .attr('y', -5)  
+  
+
 
 
 }
