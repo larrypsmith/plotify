@@ -1,26 +1,24 @@
 import {
-  redirectToLogin,
   isAuthenticated,
   fetchArtists,
   formatResponse
 } from './util'
 
-import Welcome from './welcome';
+import Hero from './hero';
 import Chart from './chart';
 
 document.addEventListener('DOMContentLoaded', () => {
-  const main = document.querySelector('main');
-  main.innerHTML = "";
+  const body = document.querySelector('body');
 
   if (isAuthenticated()) {
-    fetchArtists((response) => {
+    fetchArtists(response => {
       const data = formatResponse(response);
-      Chart(data, main);
+      const charts = Chart(data);
+      body.appendChild(charts[0]);
+      body.appendChild(charts[1]);
     })
   } else {
-    main.appendChild(Welcome.render());
-    const loginButton = document.querySelector('button');
-    loginButton.addEventListener('click', redirectToLogin);
+    body.appendChild(Hero.render());
   }
 })
 

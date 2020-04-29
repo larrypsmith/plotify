@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 
-export default (data, hook) => {
+const chart = (data) => {
   
   // create count-based hierarchy
   const hierarchy = d3.hierarchy({ children: data })
@@ -16,10 +16,7 @@ export default (data, hook) => {
     .padding(2)
     (hierarchy)
 
-  let focus = root;
-
-  const svg = d3.select(hook)
-    .append("svg")
+  const svg = d3.create("svg")
       .attr('width', width)
       .attr('height', height)
     .on('click', () => zoomTo(root))
@@ -124,7 +121,8 @@ export default (data, hook) => {
         .attr('height', imageWidth * scaleFactor)
         .attr('pointer-events', focus === root ? 'none' : 'visiblePainted')
   }
-    
+
+  let focus = root;  
   zoomTo(root)
 
   const margin = { top: 50, right: 50, bottom: 50, left: 150 }
@@ -140,8 +138,7 @@ export default (data, hook) => {
     .range([0, innerHeight])
     .padding(0.1)
   
-  const barChart = d3.select(hook)
-    .append('svg')
+  const barChart = d3.create("svg")
       .attr('width', width)
       .attr('height', height)
       .style('color', 'white')
@@ -197,9 +194,14 @@ export default (data, hook) => {
     .attr('y', 30)
 
   innerChart.append('text')
-    .text('Top genres by number of artists')
+    .text('Your Favorite Genres')
     .attr('fill', 'white')
     .attr('y', -5)  
+    .attr('x', innerWidth / 3)
   
   zoomTo(root)
-}
+
+  return [barChart.node(), svg.node()];
+};
+
+export default chart;

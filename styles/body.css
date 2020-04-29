@@ -1,8 +1,10 @@
 body {
+  position: relative;
   color: white;
   background-image: linear-gradient(to bottom right, black, rgb(42, 42, 42));
   font-family: 'Roboto', sans-serif;
-  height: 100vh;
+  min-height: 100vh;
+  min-width: 100vw;
   display: flex;
   flex-direction: column;
 }
@@ -13,10 +15,6 @@ header {
   padding: 30px 0px 0px 30px;
 }
 
-main {
-  align-self: center;
+main svg {
+  width: 50%
 }
-
-/* .bar {
-  fill: white
-} */
