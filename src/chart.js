@@ -53,7 +53,7 @@ export default (data, hook) => {
   const green = '#1db954'
 
   // map genres to circle nodes
-  const strokeWidth = 2;
+  const strokeWidth = 1;
   const genreRings = svg
     .append('g')
       .attr('id', 'genreRings')
@@ -61,21 +61,21 @@ export default (data, hook) => {
     .data(root.children)
     .join('circle')
       .attr('fill-opacity', '0')
-      .attr('stroke', green)
+      .attr('stroke', 'white')
       .attr('stroke-width', strokeWidth)
       .attr('cx', d => d.x)
       .attr('cy', d => d.y)
       .attr('r', d => d.r)
       .on('mouseover', function(datum) {
         d3.select(this)
-          .attr('stroke', 'white')
+          .attr('stroke', green)
           .attr('cursor', 'pointer')
         bars
-          .attr('fill', d => d.name === datum.data.name ? green : 'white')
+          .attr('fill', d => d.data.name === datum.data.name ? green : 'white')
       })
       .on('mouseout', function() {
         d3.select(this)
-          .attr('stroke', '#1db954')
+          .attr('stroke', 'white')
           .attr('cursor', 'auto')
         bars
           .attr('fill', 'white')
@@ -121,6 +121,10 @@ export default (data, hook) => {
       .attr('clip-path', (_, i) => `url(#clip${i})`)
       .attr('x', d => d.x - imageWidth / 2)
       .attr('y', d => d.y - imageWidth / 2)
+    .on('mouseover', function(datum) {
+      d3.select(this)
+        .attr('cursor', 'pointer')
+    })
 
   const artistTitles = artistImages.append('title')
     .text(d => d.data.name)
@@ -171,7 +175,6 @@ export default (data, hook) => {
   
   const innerChart = barChart.append('g') 
     .attr('transform', `translate(${margin.left} ${margin.top})`)
-  debugger
   const bars = innerChart.append('g')
     .selectAll('rect')
     .data(root.children)
@@ -185,14 +188,14 @@ export default (data, hook) => {
         .attr('fill', green)
         .attr('cursor', 'pointer')
       genreRings
-        .attr('stroke', d => d.data.name === datum.data.name ? 'white' : green)
+        .attr('stroke', d => d.data.name === datum.data.name ? green : 'white')
     })
     .on('mouseout', function() {
       d3.select(this)
         .attr('fill', 'white')
         .attr('cursor', 'auto')
       genreRings
-        .attr('stroke', green)
+        .attr('stroke', 'white')
     })
     .on('click', d => {
       d3.event.preventDefault();
