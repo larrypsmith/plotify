@@ -1,35 +1,9 @@
 import * as d3 from 'd3';
 
 export default (data, hook) => {
-  // create genres object
-  let genres = {};
-
-  data.forEach(artist => {
-    artist.genres.forEach(genre => {
-      if (!genres[genre]) genres[genre] = [];
-      genres[genre].push({
-        name: artist.name,
-        imageUrl: artist.imageUrl
-      });
-    })
-  });
-
-  // delete genres with only 1 member
-  Object.keys(genres).forEach(genre => {
-    let artists = genres[genre]
-    if (artists.length < 2) delete genres[genre]
-  })
-
-  // format data for D3 hierarchy
-  const formattedData = Object.keys(genres)
-    .map(genre => ({
-      name: genre,
-      children: genres[genre]
-    }))
-    .sort((a, b) => d3.descending(a.children.length, b.children.length))
   
   // create count-based hierarchy
-  const hierarchy = d3.hierarchy({ children: formattedData })
+  const hierarchy = d3.hierarchy({ children: data })
     .count();
 
   // set chart width and height
@@ -158,11 +132,11 @@ export default (data, hook) => {
   const innerHeight = height - margin.top - margin.bottom
 
   const xScale = d3.scaleLinear()
-    .domain([0, d3.max(formattedData, d => d.children.length)])
+    .domain([0, d3.max(data, d => d.children.length)])
     .range([0, innerWidth]);
 
   const yScale = d3.scaleBand()
-    .domain(formattedData.map(d => d.name))
+    .domain(data.map(d => d.name))
     .range([0, innerHeight])
     .padding(0.1)
   
