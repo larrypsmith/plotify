@@ -15,11 +15,6 @@ body > * {
   margin-bottom: 1rem;
 }
 
-header {
-  font-weight: 700;
-  font-size: 90px;
-}
-
 main {
   width: 100%;
   flex-grow: 1;

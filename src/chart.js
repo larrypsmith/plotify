@@ -10,7 +10,6 @@ const chart = (data, hook) => {
   const width = hook.clientHeight;
   const height = width;
   
-  debugger
   // pack data
   const root = d3.pack()
     .size([width, height])
