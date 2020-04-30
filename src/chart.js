@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 
-const chart = (data) => {
+const chart = (data, hook) => {
   
   // create count-based hierarchy
   const hierarchy = d3.hierarchy({ children: data })
@@ -10,13 +10,15 @@ const chart = (data) => {
   const width = hook.clientHeight;
   const height = width;
   
+  debugger
   // pack data
   const root = d3.pack()
     .size([width, height])
     .padding(1)
     (hierarchy)
 
-  const svg = d3.create("svg")
+  const svg = d3.select(hook)
+    .append('svg')
       .attr('width', width)
       .attr('height', height)
       .attr('class', 'circle-packing-chart')
@@ -210,7 +212,7 @@ const chart = (data) => {
   
   zoomTo(root)
 
-  return [barChart.node(), svg.node()];
+  return [svg.node(), barChart.node()];
 };
 
 export default chart;

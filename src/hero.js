@@ -1,5 +1,3 @@
-import loginButton from './loginButton';
-
 export default {
   html: () => (`
     <h2>
@@ -13,7 +11,7 @@ export default {
 
   render: function() {
     let container = document.createElement('div');
-    container.className = 'welcome';
+    container.className = 'hero';
     container.innerHTML = this.html();
     return container;
   }

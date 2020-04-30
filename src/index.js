@@ -1,7 +1,8 @@
 import {
   isAuthenticated,
   fetchArtists,
-  formatResponse
+  formatResponse,
+  redirectToLogin
 } from './util'
 
 import Hero from './hero';
@@ -16,13 +17,11 @@ document.addEventListener('DOMContentLoaded', () => {
   if (isAuthenticated()) {
     fetchArtists(response => {
       const data = formatResponse(response);
-      const charts = Chart(data);
-      body.appendChild(charts[0]);
-      body.appendChild(charts[1]);
+      Chart(data, main);
     })
   } else {
-    body.appendChild(Hero.render());
+    main.appendChild(Hero.render());
+    const loginButton = document.querySelector('button');
+    loginButton.addEventListener('click', redirectToLogin);
   }
 })
-
-  
