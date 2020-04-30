@@ -1,7 +1,7 @@
 export default {
   html: () => (`
     <h2>
-      Plotify creates a circle packing chart of your favorite Spotify artists and genres.
+      Plotify visualizes your favorite Spotify artists and genres.
     </h2>
 
     <button class="login-button">
