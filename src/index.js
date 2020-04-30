@@ -9,6 +9,8 @@ import Welcome from './welcome';
 import Chart from './chart';
 
 document.addEventListener('DOMContentLoaded', () => {
+  const app = document.querySelector('#app');
+  
   const main = document.querySelector('main');
   main.innerHTML = "";
 

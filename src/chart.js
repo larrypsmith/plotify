@@ -7,13 +7,13 @@ export default (data, hook) => {
     .count();
 
   // set chart width and height
-  const width = 500;
-  const height = 500;
+  const width = hook.clientHeight;
+  const height = width;
   
   // pack data
   const root = d3.pack()
-    .size([width, width])
-    .padding(2)
+    .size([width, height])
+    .padding(1)
     (hierarchy)
 
   let focus = root;
@@ -22,6 +22,7 @@ export default (data, hook) => {
     .append("svg")
       .attr('width', width)
       .attr('height', height)
+      .attr('class', 'circle-packing-chart')
     .on('click', () => zoomTo(root))
 
   const green = '#1db954'
@@ -63,6 +64,9 @@ export default (data, hook) => {
   const genreTitles = genreRings.append('title')
     .text(d => d.data.name)
 
+  // set image width
+  const imageWidth = 30;
+
   const artistCircles = svg
     .append('g')
       .attr('id', 'artistCircles')
@@ -71,6 +75,8 @@ export default (data, hook) => {
     .join('clipPath')
       .attr('id', (_, i) => `clip${i}`)
     .append('circle')
+      .attr('r', d => d.r)
+
 
   // move nodes to initial positions
   svg.selectAll('circle')
@@ -79,9 +85,6 @@ export default (data, hook) => {
       .attr('cy', d => d.y)
       .attr('r', d => d.r)
 
-  // set image width
-  const imageWidth = 30;
-
   // Add image on top of each artistCircle
   const artistImages = svg
     .append('g')
@@ -89,12 +92,12 @@ export default (data, hook) => {
     .selectAll('image')
     .data(root.leaves())
     .join('image')
-      .attr('width', imageWidth)
-      .attr('height', imageWidth)
+      .attr('width', d => d.r * 2)
+      .attr('height', d => d.r * 2)
       .attr('href', d => d.data.imageUrl)
       .attr('clip-path', (_, i) => `url(#clip${i})`)
-      .attr('x', d => d.x - imageWidth / 2)
-      .attr('y', d => d.y - imageWidth / 2)
+      .attr('x', d => d.x - d.r)
+      .attr('y', d => d.y - d.r)
     .on('mouseover', function(datum) {
       d3.select(this)
         .attr('cursor', 'pointer')
@@ -108,27 +111,28 @@ export default (data, hook) => {
     focus = destination;
     const scaleFactor = width / (destination.r * 2);
     const transition = d3.transition().duration(750) 
-    const translateCircle = (start, end) => (start - end) * scaleFactor + width / 2;
-    const translateImage = (start, end) => (start - end - imageWidth / 2) * scaleFactor + width / 2;
+    const translateImage = (start, end, r) => (start - end - r) * scaleFactor + width / 2;
 
     svg.selectAll('circle')
       .transition(transition)
-        .attr('cx', d => translateCircle(d.x, destination.x))
-        .attr('cy', d => translateCircle(d.y, destination.y))
-        .attr('r', d => d.r * scaleFactor)
+        .attr('cx', d => (d.x - destination.x) * scaleFactor + width / 2)
+        .attr('cy', d => (d.y - destination.y) * scaleFactor + height / 2)
+        .attr('r', d => d.r * scaleFactor);
+
     artistImages
       .transition(transition)
-        .attr('x', d => translateImage(d.x, destination.x))
-        .attr('y', d => translateImage(d.y, destination.y))
-        .attr('width', imageWidth * scaleFactor)
-        .attr('height', imageWidth * scaleFactor)
+        .attr('x', d => translateImage(d.x, destination.x, d.r))
+        .attr('y', d => translateImage(d.y, destination.y, d.r))
+        .attr('width', d => 2 * d.r * scaleFactor)
+        .attr('height', d => 2 * d.r * scaleFactor)
         .attr('pointer-events', focus === root ? 'none' : 'visiblePainted')
   }
     
-  zoomTo(root)
 
-  const margin = { top: 50, right: 50, bottom: 50, left: 150 }
-  const innerWidth = width - margin.right - margin.left
+  const chartWidth = width + 200;
+
+  const margin = { top: 50, right: 50, bottom: 60, left: 200 }
+  const innerWidth = chartWidth - margin.right - margin.left
   const innerHeight = height - margin.top - margin.bottom
 
   const xScale = d3.scaleLinear()
@@ -142,13 +146,14 @@ export default (data, hook) => {
   
   const barChart = d3.select(hook)
     .append('svg')
-      .attr('width', width)
+      .attr('width', chartWidth)
       .attr('height', height)
       .style('color', 'white')
       .attr('class', 'bar-chart')
   
   const innerChart = barChart.append('g') 
-    .attr('transform', `translate(${margin.left} ${margin.top})`)
+    .attr('transform', `translate(${margin.left} ${margin.top})`);
+
   const bars = innerChart.append('g')
     .selectAll('rect')
     .data(root.children)
@@ -194,12 +199,15 @@ export default (data, hook) => {
     .text('Number of Artists')
     .attr('fill', 'white')
     .attr('x', innerWidth / 2)
-    .attr('y', 30)
+    .attr('y', 50)
+    .attr('class', 'axis-title')
 
   innerChart.append('text')
-    .text('Top genres by number of artists')
+    .text('Your Top Genres')
+    .attr('x', innerWidth / 4)
     .attr('fill', 'white')
-    .attr('y', -5)  
+    .attr('y', -20)  
+    .attr('class', 'chart-title')
   
   zoomTo(root)
 }
