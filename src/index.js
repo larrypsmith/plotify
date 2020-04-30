@@ -8,7 +8,10 @@ import Hero from './hero';
 import Chart from './chart';
 
 document.addEventListener('DOMContentLoaded', () => {
-  const body = document.querySelector('body');
+  const app = document.querySelector('#app');
+  
+  const main = document.querySelector('main');
+  main.innerHTML = "";
 
   if (isAuthenticated()) {
     fetchArtists(response => {
