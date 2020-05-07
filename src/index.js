@@ -5,6 +5,8 @@ import {
   redirectToLogin
 } from './util'
 
+import { demoChartData } from './data';
+
 import Hero from './hero';
 import Chart from './chart';
 import ProtectedHeader from './protectedHeader';
@@ -22,10 +24,20 @@ document.addEventListener('DOMContentLoaded', () => {
       Chart(data, main);
     })
   } else {
+    app.innerHTML = "";
     app.appendChild(AuthHeader.render());
     app.appendChild(main);
     main.appendChild(Hero.render());
-    const loginButton = document.querySelector('button');
+    const loginButton = document.querySelector('.login-btn');
     loginButton.addEventListener('click', redirectToLogin);
+
+    const demoButton = document.querySelector('.demo-btn');
+    demoButton.addEventListener('click', () => {
+      app.innerHTML = ""
+      app.appendChild(ProtectedHeader.render());
+      app.appendChild(main)
+      main.innerHTML = "";
+      Chart(demoChartData, main);
+    })
   };
 })

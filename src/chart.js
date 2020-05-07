@@ -1,7 +1,6 @@
 import * as d3 from 'd3';
 
 const chart = (data, hook) => {
-  
   // create count-based hierarchy
   const hierarchy = d3.hierarchy({ children: data })
     .count();

@@ -4,8 +4,12 @@ export default {
       Plotify visualizes your favorite Spotify artists and genres.
     </h2>
 
-    <button class="login-button">
+    <button class="login-btn">
       Connect with Spotify
+    </button>
+
+    <button class="demo-btn">
+      Log in as Demo User
     </button>
   `),
 
